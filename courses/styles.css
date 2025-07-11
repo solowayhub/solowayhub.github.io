@@ -1,0 +1,315 @@
+/* Общие стили */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #212529;
+}
+
+.content-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.lesson-header h1 {
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* --- ОВЕРЛЕЙ (только для мобильных) --- */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+}
+
+.overlay.visible {
+    opacity: 1;
+}
+
+/* --- БОКОВАЯ ПАНЕЛЬ (САЙДБАР) --- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background: #f8f9fa;
+    border-right: 0px solid #dee2e6;
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.sidebar.visible {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 0px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    color: #6c757d;
+}
+
+/* --- КНОПКА ОТКРЫТИЯ САЙДБАРА --- */
+.open-sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar.visible ~ .open-sidebar {
+    opacity: 0;
+}
+
+/* --- ПЛАН УРОКА ВНУТРИ САЙДБАРА --- */
+.lesson-plan ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: lesson-plan-counter;
+}
+
+.lesson-plan li {
+    counter-increment: lesson-plan-counter;
+    margin: 0;
+}
+
+.lesson-plan a {
+    color: #495057;
+    text-decoration: none;
+    font-weight: 400;
+    padding: 0.8rem 1rem;
+    background: transparent;
+    border-bottom: 0px solid #dee2e6;
+    transition: background-color 0.2s ease;
+    display: grid;
+    grid-template-columns: 25px 1fr;
+    font-size: 0.9rem;
+}
+
+.lesson-plan li:last-child a {
+    border-bottom: none;
+}
+
+.lesson-plan a::before {
+    content: counter(lesson-plan-counter) ". ";
+    font-weight: 400;
+    color: #888;
+    margin-right: 0.5rem;
+}
+
+.lesson-plan a:hover, 
+.lesson-plan a.active {
+    background: #eeeeee;
+    color: #000;
+}
+
+/* --- ОСНОВНОЙ КОНТЕНТ --- */
+.description {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #495057;
+}
+
+.description svg{
+    margin-top: 3px;
+    width: 20px;
+    height: 20px
+}
+
+.description i {
+    flex-shrink: 0;
+    color: #6c757d;
+}
+
+.description p {
+    margin: 0;
+}
+
+.slide {
+    padding: 1.4rem 0;
+    border-bottom: 1px solid #f2f2f2
+}
+
+.slide ul {
+    padding-left: 15px;
+}
+
+.slide ol {
+    padding-left: 20px;
+    display: grid;
+    grid-gap: 10px;
+}
+
+.slide:last-child {
+    border-bottom: none;
+}
+
+.slide h2 {
+    font-size: 1.6rem;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+/* --- СТИЛИ ВОПРОСОВ --- */
+
+.question {
+    padding: 1rem 0 2rem;
+    border-bottom: 0px solid #e7e7e7;
+}
+
+.question h3{
+    font-weight: 600;
+}
+
+.question:first-of-type{
+    padding-top: 1px;
+}
+
+.question:last-of-type {
+    border-bottom: none;
+}
+
+.answers{
+    display: grid;
+    grid-gap: 10px;
+}
+
+.answer-text{
+    font-size: 1rem;
+}
+
+.answer-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer !important;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.answer-btn:hover,
+.answer-btn.selected {
+    background: #f4f4f4;
+}
+
+.answer-btn .checkbox-icon {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #adb5bd;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.answer-btn.selected .checkbox-icon {
+    background-color: #212529;
+    border-color: #212529;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+.note {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid;
+}
+
+.note.correct {
+    border-color: #bfdbc5;
+    background-color: #f0fff4;
+}
+
+.note.incorrect {
+    border-color: #ffb8be;
+    background-color: #fff5f5;
+}
+
+/* --- АДАПТИВНОСТЬ --- */
+@media (min-width: 993px) {
+    body {
+        transition: padding-left 0.4s ease;
+    }
+    .content-wrapper {
+        transition: transform 0.4s ease;
+    }
+    body.sidebar-open .content-wrapper {
+        transform: translateX(200px);
+    }
+    .lesson-plan a{
+        padding: 0.8rem 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .overlay {
+        display: block;
+    }
+    .lesson-header h1 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+        padding-top: 50px;
+    }
+    .slide h2 {
+        font-size: 1.3rem;
+    }
+}
