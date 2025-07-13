@@ -10,12 +10,13 @@ body {
     padding: 0;
     background: #fff;
     color: #212529;
+    font-size: 17px;
 }
 
 .content-wrapper {
-    max-width: 700px;
+    max-width: 650px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 2.5rem 1rem;
 }
 
 .lesson-header h1 {
@@ -50,7 +51,6 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    max-width: 400px;
     height: 100%;
     background: #f8f9fa;
     border-right: 0px solid #dee2e6;
@@ -186,6 +186,10 @@ body {
     border-bottom: 1px solid #f2f2f2
 }
 
+.slide img{
+    width: 100%;
+}
+
 .slide ul {
     padding-left: 15px;
 }
@@ -291,13 +295,17 @@ body {
         transition: padding-left 0.4s ease;
     }
     .content-wrapper {
+        padding: 4.5rem 1rem;
         transition: transform 0.4s ease;
     }
+    .sidebar{
+        max-width: 400px;
+    }
     body.sidebar-open .content-wrapper {
-        transform: translateX(200px);
+        transform: translateX(130px);
     }
     .lesson-plan a{
-        padding: 0.8rem 1.5rem;
+        padding: 0.7rem 1.5rem;
     }
 }
 
@@ -307,10 +315,10 @@ body {
     }
     .lesson-header h1 {
         font-size: 1.5rem;
-        line-height: 1.3;
+        line-height: 1.6;
         padding-top: 50px;
     }
     .slide h2 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
 }
