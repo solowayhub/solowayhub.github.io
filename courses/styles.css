@@ -169,7 +169,8 @@ body {
 .description svg{
     margin-top: 5px;
     width: 25px;
-    height: 25px
+    height: 25px;
+    display: table;
 }
 
 .description i {
@@ -331,7 +332,10 @@ body {
         margin-top: -30px;
         margin-bottom: 15px;
     }
+    .description h3{
+        font-size: 1.1rem;
+    }
     .slide h2 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 }
