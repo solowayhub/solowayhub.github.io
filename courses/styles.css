@@ -17,6 +17,39 @@ body {
     max-width: 600px;
     margin: 0 auto;
     padding: 2.5rem 1rem;
+    margin-top: 55px;
+}
+
+.content-wrapper .breadcrumbs{
+    align-items: center;
+    display: inline-flex;
+    gap: 5px;
+    margin-bottom: 40px;
+    font-weight: 200;
+    font-size: 1rem;
+}
+
+.breadcrumbs svg{
+    stroke-width: 1;
+    width: 25px;
+    height: 25px;
+}
+
+.breadcrumbs-link{
+    color: #212529;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.breadcrumbs-link:hover{
+
+}
+
+.lesson-banner-img{
+    border-radius: 15px;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .lesson-header h1 {
@@ -45,21 +78,137 @@ body {
     z-index: 999;
 }
 
+/* --- МЕНЮ (ХЕДЕР) --- */
+.header{
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1001;
+}
+
+.header .logo{
+    width: 170px;
+    font-weight: 500;
+}
+
+.header .nav{
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .nav{
+
+}
+
+.header .nav a{
+
+}
+
+.header .nav a:hover{
+
+}
+
+.header .nav a.assist{
+    padding: 3px 15px;
+    background: #000000;
+    color: #ffffff;
+    font-weight: 500;
+    border-radius: 15px;
+}
+
+.header .nav a.assist:hover{
+
+}
+
+.header .settings{
+    width: 170px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.header .settings .lang-btn,
+.header .settings .profile-link,
+.header .settings .theme-switch{
+    width: 35px;
+    height: 35px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    cursor: pointer;
+}
+
+.lang-btn {
+    position: relative;
+    gap: 5px;
+}
+
+.lang-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    width: 180px;
+    overflow: hidden;
+    z-index: 1001;
+}
+
+.lang-btn.open .lang-dropdown {
+    display: block;
+}
+
+.lang-dropdown a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #212529;
+    font-size: 0.9rem;
+}
+
+.lang-dropdown a:hover {
+    background-color: #f8f9fa;
+}
+
+.lang-dropdown a.active {
+    font-weight: 600;
+    background-color: #f1f1f1;
+}
+
+
+.header .settings svg{
+    width: 25px;
+    height: 25px;
+    stroke-width: 1;
+}
+
 /* --- БОКОВАЯ ПАНЕЛЬ (САЙДБАР) --- */
 .sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
+    background: #fff;
+    top: 60px;
+    left: 0px;
     width: 100%;
-    height: 100%;
-    background: #f8f9fa;
-    border-right: 0px solid #dee2e6;
+    height: calc(100% - 60px);
+    border-right: 1px solid rgb(240, 240, 240);
     transform: translateX(-100%);
-    transition: transform 0.4s ease;
+    transition: transform 0.4s;
     z-index: 1000;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
 }
 
 .sidebar.visible {
@@ -67,16 +216,25 @@ body {
 }
 
 .sidebar-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 0px solid #dee2e6;
+    padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: rgb(255, 255, 255);
+    position: fixed;
+    width: 100%;
 }
 
 .sidebar-header h3 {
-    margin: 0;
-    font-size: 1.4rem;
+    margin: 0px;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.sidebar-header svg{
+    width: 25px;
+    height: 25px;
+    stroke-width: 1.5;
 }
 
 .close-sidebar {
@@ -88,31 +246,63 @@ body {
     color: #6c757d;
 }
 
-/* --- КНОПКА ОТКРЫТИЯ САЙДБАРА --- */
-.open-sidebar {
+/* --- КНОПКИ ДЕЙСТВИЙ (САЙДБАР, ИЗБРАННОЕ) --- */
+.action-buttons {
     position: fixed;
-    top: 20px;
-    left: 20px;
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 1001;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-420px);
+    z-index: 998;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    opacity: 1;
+    flex-direction: column;
+    gap: 20px;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.sidebar.visible ~ .open-sidebar {
+.sidebar.visible ~ .action-buttons {
     opacity: 0;
 }
 
+.action-buttons button {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    position: relative; /* Для позиционирования подсказки */
+}
+
+.action-buttons button:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 120%; /* Позиционируем слева от кнопки */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #323437;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    z-index: 1001;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
 /* --- ПЛАН УРОКА ВНУТРИ САЙДБАРА --- */
+.lesson-plan{
+    overflow-y: auto;
+    height: calc(100% - 70px);
+    position: fixed;
+    top: 60px;
+    width: 100%;
+}
+
 .lesson-plan ul {
     list-style: none;
     margin: 0;
@@ -135,7 +325,7 @@ body {
     transition: background-color 0.2s ease;
     display: grid;
     grid-template-columns: 25px 1fr;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .lesson-plan li:last-child a {
@@ -295,6 +485,483 @@ body {
     background-color: #fff5f5;
 }
 
+/* --- БОКОВАЯ ПАНЕЛЬ --- */
+.panel{
+    position: fixed;
+    top: 60px;
+    right: 0px;
+    width: 100%;
+    background: #fff;
+    max-width: 350px;
+    height: calc(100% - 60px);
+    border-left: 1px solid rgb(240, 240, 240);
+    transform: translateX(100%);
+    transition: transform 0.4s;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel.visible {
+    transform: translateX(0);
+}
+
+.panel .panel-header{
+    font-weight: 400;
+    display: flex;
+    gap: 10px;
+    font-size: 1.1rem;
+    align-items: center;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    background: rgb(255, 255, 255);
+    position: fixed;
+    width: 100%;
+}
+
+.panel-header .close-panel{
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    color: #6c757d;
+    margin-right: 10px;
+}
+
+.panel-header svg{
+    width: 25px;
+    height: 25px;
+    stroke-width: 1.5;
+}
+
+.panel-header .tab-header{
+    width: 100%;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #868686;
+    font-weight: 400;
+    transition: all 0.2s ease;
+}
+
+.panel-header .tab-header:hover{
+    background: #f7f7f7;
+    color: #212529;
+}
+
+.panel-header .tab-header.active{
+    background: #eeeeee;
+    color: #212529;
+}
+
+.panel-content{
+    padding: 1rem;
+    padding-top: 60px;
+    height: 100%;;
+}
+
+.panel-content .tab-content{
+    display: none; /* Скрываем все вкладки по умолчанию */
+    height: 100%;
+    position: relative;
+    flex-direction: column;
+}
+
+.panel-content .tab-content.active{
+    display: flex; /* Показываем только активную вкладку */
+}
+
+.panel-content .note{
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin: 0;
+    border: 1px solid transparent; /* Добавим для плавности */
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.note-text {
+    flex-grow: 1;
+    padding-right: 0px; /* Оставляем место для иконок */
+}
+
+.note-actions {
+    display: flex;
+    gap: 8px;
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    opacity: 0;
+    border-radius: 5px;
+    transition: opacity 0.2s ease;
+}
+
+.panel-content .note:hover .note-actions {
+    opacity: 1;
+}
+
+.note-actions svg {
+    width: 27px;
+    height: 27px;
+    stroke-width: 1.5;
+    color: #6c757d;
+    cursor: pointer;
+    background: #eeeeee;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.note-actions svg:hover {
+    color: #212529;
+}
+
+.panel-content .note.editing {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.note-editor {
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    resize: none;
+    outline: none;
+}
+
+.panel-content .note:hover{
+    background: #f8f9fa;
+}
+
+.note-list{
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.note-form,
+.chat-form{
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    max-width: calc(350px - 2rem);
+    background: #fff;
+    position: relative;
+}
+
+.note-form textarea,
+.chat-form textarea{
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 100%;
+    height: 110px;
+    resize: none;
+    border: 1px solid rgb(240, 240, 240);
+    padding: 15px;
+    font-weight: 400;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    outline: none; 
+    transition: border-color 0.2s ease;
+}
+
+.note-form textarea:focus,
+.chat-form textarea:focus{
+    border-color: #000000;
+}
+
+.note-form .btn,
+.chat-form .btn{
+    border: 1px solid #000;
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    line-height: 1.5rem;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+    padding: 12px 15px;
+    color: #000000;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.note-form .btn:hover,
+.chat-form .btn:hover{
+    background: #000000;
+    color: #ffffff;
+}
+
+.note-form .minibtn,
+.chat-form .mini-btn{
+    position: absolute;
+    right: 7px;
+    width: 40px;
+    height: 30px;
+    margin-top: -45px;
+    background: #ededed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.note-form .minibtn:hover,
+.chat-form .mini-btn:hover{
+    background: #000000;
+    color: #ffffff;
+}
+
+.chat-list{
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 90%;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.assistant-message {
+    background-color: #f1f1f1;
+    color: #212529;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+}
+
+/* --- КНОПКА ОТКРЫТИЯ ПАНЕЛИ --- */
+.panel-cta {
+    position: fixed;
+    top: 50%;
+    right: 50%;
+    transform: translate(650px, -50%);
+    width: 250px;
+    border: none;
+    z-index: 998;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.panel.visible ~ .panel-cta {
+    opacity: 0;
+}
+
+.panel-cta-title{
+    font-size: 1.1rem;
+    font-weight: 200;
+    color: #212529;
+    margin: 0.4rem 0;
+}
+
+.panel-cta-btn{
+    padding: 10px 25px;
+    background: #eeeeee;
+    color: #212529;
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 15px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.panel-cta-btn svg{
+    stroke-width: 1.5;
+}
+
+.panel-cta-btn:hover{
+    background: #000;
+    color: #fff;
+}
+
+
+/* --- СТИЛИ ДЛЯ МОДАЛЬНОГО ОКНА ПОДТВЕРЖДЕНИЯ --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.note-modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .note-modal-content {
+    transform: scale(1);
+}
+
+.note-modal-content h4 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.note-modal-content p {
+    margin-bottom: 1.5rem;
+    color: #6c757d;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    max-width: 400px;
+    margin: auto;
+}
+
+.modal-buttons button {
+    width: 100%;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    align-items: center;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-buttons button svg{
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.5;
+}
+
+.btn-primary{
+    background-color: #000;
+    color: #fff;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-secondary {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.btn-secondary:hover {
+    background-color: #dee2e6;
+}
+
+.go-to-edit-link{
+    color: #212529;
+    margin: auto;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    border-top: 1px solid #eaecef;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    max-width: 400px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.go-to-edit-link svg{
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.5;
+}
+
+.edit-note-textarea{
+    width: 100%;
+    max-width: 400px;
+    height: 110px;
+    resize: none;
+    outline: none;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 15px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    border: 1px solid rgb(240, 240, 240);
+    font-weight: 400;
+}
+
+.edit-note-textarea:focus{
+    border-color: #000000;
+}
+
+
 /* --- АДАПТИВНОСТЬ --- */
 @media (min-width: 993px) {
     body {
@@ -305,13 +972,14 @@ body {
         transition: transform 0.4s ease;
     }
     .sidebar{
-        max-width: 400px;
+        max-width: 350px;
     }
     body.sidebar-open .content-wrapper {
-        transform: translateX(100px);
+        transform: translateX(0px);
     }
     .lesson-plan a{
-        padding: 0.7rem 1.5rem;
+        padding: 0.5rem 1.5rem;
+        padding-left: 1rem;
     }
 }
 
