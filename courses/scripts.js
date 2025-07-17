@@ -89,15 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleResize() {
-        isDesktop = window.innerWidth > DESKTOP_BREAKPOINT;
-        if (isDesktop) {
-            body.classList.add('desktop');
-            openSidebar(); // Открываем по умолчанию на десктопе
-            openPanel('note'); // Открываем с активной вкладкой 'note'
-        } else {
-            body.classList.remove('desktop');
-            closeSidebar(); // Закрываем на мобильных по умолчанию
-            closePanel();
+        const newIsDesktop = window.innerWidth > DESKTOP_BREAKPOINT;
+        if (newIsDesktop !== isDesktop) {
+            isDesktop = newIsDesktop;
+            if (isDesktop) {
+                body.classList.add('desktop');
+                openSidebar(); // Открываем по умолчанию на десктопе
+                openPanel('note'); // Открываем с активной вкладкой 'note'
+            } else {
+                body.classList.remove('desktop');
+                closeSidebar(); // Закрываем на мобильных по умолчанию
+                closePanel();
+            }
         }
     }
 
