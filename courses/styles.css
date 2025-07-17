@@ -16,8 +16,8 @@ body {
 .content-wrapper {
     max-width: 600px;
     margin: 0 auto;
-    padding: 2.5rem 1rem;
-    margin-top: 55px;
+    padding: 1rem;
+    margin-top: 50px;
 }
 
 .content-wrapper .breadcrumbs{
@@ -25,7 +25,7 @@ body {
     display: inline-flex;
     gap: 5px;
     margin-bottom: 40px;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 1rem;
 }
 
@@ -33,17 +33,19 @@ body {
     stroke-width: 1;
     width: 25px;
     height: 25px;
+    opacity: 0.5;
 }
 
 .breadcrumbs-link{
     color: #212529;
+    opacity: 0.5;
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .breadcrumbs-link:hover{
-
+    opacity: 1;
 }
 
 .lesson-banner-img{
@@ -53,7 +55,8 @@ body {
 }
 
 .lesson-header h1 {
-    margin: 0 0 2rem 0;
+    /* margin: 0 0 2rem 0; */
+    margin: 0 0 1rem 0;
     font-size: 2.25rem;
     font-weight: 700;
     line-height: 1.5;
@@ -91,6 +94,9 @@ body {
     top: 0;
     width: 100%;
     z-index: 1001;
+    background-color: rgb(253 253 253 / 75%);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .header .logo{
@@ -100,18 +106,19 @@ body {
 
 .header .nav{
     width: 100%;
+    height: 100%;
     max-width: 740px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.header .nav{
-
-}
 
 .header .nav a{
-
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .header .nav a:hover{
@@ -124,14 +131,66 @@ body {
     color: #ffffff;
     font-weight: 500;
     border-radius: 15px;
+    height: 35px;;
 }
 
 .header .nav a.assist:hover{
 
 }
 
+.header .nav-back{
+    display: none;
+    cursor: pointer;
+    width: 50px;
+    height: 100%;
+    font-weight: 500;
+    align-items: center;
+    justify-content: start;
+}
+
+.header .nav-back svg{
+    width: 30px;
+    height: 25px;
+    stroke-width: 2;
+}
+
+.header .current-lesson{
+    display: none;
+    text-align: center;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+}
+
+.open-settings{
+    display: none;
+    align-items: center;
+    justify-content: end;
+    cursor: pointer;
+    width: 50px;
+    height: 100%;
+}
+
+.open-settings svg{
+    width: 30px;
+    height: 25px;
+    stroke-width: 1.5;
+}
+
+.header .current-lang{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+}
+.header .current-lang.mobile{
+    display: none;
+}
+
+
 .header .settings{
     width: 170px;
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -140,13 +199,29 @@ body {
 
 .header .settings .lang-btn,
 .header .settings .profile-link,
-.header .settings .theme-switch{
+.header .settings .theme-switch,
+.header .settings .share{
     width: 35px;
-    height: 35px;
+    height: 100%;
     justify-content: center;
     align-items: center;
     display: flex;
     cursor: pointer;
+    gap: 10px;
+}
+
+.theme-switch .theme-item{
+    display: none;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.theme-switch .theme-item.active{
+    display: flex;
+}
+
+.header .settings .share{
+    display: none;
 }
 
 .lang-btn {
@@ -157,12 +232,12 @@ body {
 .lang-dropdown {
     display: none;
     position: absolute;
-    top: 40px;
+    top: 50px;
     right: 0;
     background-color: #fff;
     border: 1px solid #f0f0f0;
     border-radius: 8px;
-    width: 180px;
+    width: 185px;
     overflow: hidden;
     z-index: 1001;
 }
@@ -172,7 +247,9 @@ body {
 }
 
 .lang-dropdown a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 15px;
     text-decoration: none;
     color: #212529;
@@ -188,11 +265,24 @@ body {
     background-color: #f1f1f1;
 }
 
+.header .settings .lang-dropdown svg{
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.header .settings .lang-dropdown .active svg{
+    opacity: 1;
+}
 
 .header .settings svg{
     width: 25px;
     height: 25px;
     stroke-width: 1;
+}
+
+.header .settings .span-text{
+    display: none;
 }
 
 /* --- БОКОВАЯ ПАНЕЛЬ (САЙДБАР) --- */
@@ -220,7 +310,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgb(255, 255, 255);
+    /* background: rgb(255, 255, 255); */
     position: fixed;
     width: 100%;
 }
@@ -249,7 +339,7 @@ body {
 /* --- КНОПКИ ДЕЙСТВИЙ (САЙДБАР, ИЗБРАННОЕ) --- */
 .action-buttons {
     position: fixed;
-    top: 120px;
+    top: 122px;
     left: 50%;
     transform: translateX(-420px);
     z-index: 998;
@@ -273,8 +363,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    /* box-shadow: 0 0px 10px rgba(0, 0, 0, 0.1); */
+    transition: all 0.3s ease;
     position: relative; /* Для позиционирования подсказки */
 }
 
@@ -284,14 +374,88 @@ body {
     right: 120%; /* Позиционируем слева от кнопки */
     top: 50%;
     transform: translateY(-50%);
-    color: #323437;
+    color: #5a5c5e;
     padding: 5px 10px;
     border-radius: 5px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     white-space: nowrap;
     z-index: 1001;
     opacity: 1;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
+}
+
+.action-buttons button:hover{
+    background: #eeeeee;
+}
+
+.action-buttons svg{
+    stroke-width: 1;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.action-buttons button:hover svg{
+    opacity: 1;
+    stroke-width: 1.5;
+}
+
+.action-buttons button.favorite-btn.active svg{
+    color: #ff6c6c;
+    fill: #ff6c6c;
+}
+
+.lesson-nav{
+    display: none;
+    position: fixed;
+    top: auto;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 998;
+    flex-direction: row;
+    gap: 0px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border-radius: 20px;
+    padding: 0;
+    background-color: rgb(253 253 253 / 75%);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.lesson-nav button {
+    width: 70px;
+    height: 45px;
+    background: transparent;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    position: relative;
+}
+
+.lesson-nav button.active {
+    background: lch(0 0 0 / 0.1);
+}
+
+.lesson-nav button.favorite-btn.active{
+    background: transparent !important;
+}
+
+.lesson-nav button svg{
+    height: 30px;
+    width: 30px;
+    stroke-width: 1;
+    fill: none;
+    transition: fill 0.2s ease, color 0.2s ease;
+}
+
+.lesson-nav button.favorite-btn.active svg{
+    stroke-width: 1.5;
+    color: #ff6c6c !important;
+    fill: #ff6c6c;
 }
 
 /* --- ПЛАН УРОКА ВНУТРИ САЙДБАРА --- */
@@ -318,7 +482,7 @@ body {
 .lesson-plan a {
     color: #495057;
     text-decoration: none;
-    font-weight: 400;
+    font-weight: 300;
     padding: 0.8rem 1rem;
     background: transparent;
     border-bottom: 0px solid #dee2e6;
@@ -515,7 +679,7 @@ body {
     padding: 1rem;
     justify-content: space-between;
     align-items: center;
-    background: rgb(255, 255, 255);
+    /* background: rgb(255, 255, 255); */
     position: fixed;
     width: 100%;
 }
@@ -579,7 +743,7 @@ body {
     font-size: 0.9rem;
     line-height: 1.5;
     padding: 0.8rem;
-    border-radius: 10px;
+    border-radius: 0px;
     margin: 0;
     border: 1px solid transparent; /* Добавим для плавности */
     transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -599,7 +763,7 @@ body {
     gap: 8px;
     position: absolute;
     top: -15px;
-    right: 5px;
+    right: 10px;
     opacity: 0;
     border-radius: 5px;
     transition: opacity 0.2s ease;
@@ -647,11 +811,14 @@ body {
 }
 
 .note-list{
+    padding-top: 15px;;
     height: 100%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-left: -1rem;
+    margin-right: -1rem;
 }
 
 .note-form,
@@ -660,7 +827,7 @@ body {
     padding-top: 1rem;
     padding-bottom: 0.5rem;
     max-width: calc(350px - 2rem);
-    background: #fff;
+    /* background: #fff; */
     position: relative;
 }
 
@@ -843,14 +1010,37 @@ body {
     padding: 2rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 600px;
-    text-align: center;
+    max-width: 500px;
+    /* text-align: center; */
     transform: scale(0.95);
     transition: transform 0.3s ease;
 }
 
 .modal-overlay.visible .note-modal-content {
     transform: scale(1);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+
+.close-modal-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: #6c757d;
+    stroke-width: 1.5;
+    transition: stroke 0.2s ease;
+}
+
+.close-modal-btn:hover svg {
+    stroke: #212529;
 }
 
 .note-modal-content h4 {
@@ -869,7 +1059,7 @@ body {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    max-width: 400px;
+    max-width: 500px;
     margin: auto;
 }
 
@@ -942,7 +1132,7 @@ body {
 
 .edit-note-textarea{
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     height: 110px;
     resize: none;
     outline: none;
@@ -959,6 +1149,60 @@ body {
 
 .edit-note-textarea:focus{
     border-color: #000000;
+}
+
+
+.modal-confirmation-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 150px; /* Примерная высота для центрирования */
+    text-align: center;
+}
+
+.modal-confirmation-content svg{
+    width: 50px;
+    height: 50px;
+    stroke-width: 1.5;
+    color: #4fb384;
+}
+
+.note.is-deleting {
+    animation: shake-and-slide-out 0.7s forwards ease-in-out;
+    border: 1px solid #dc3545 !important;
+}
+
+.note.is-collapsing {
+    transition: margin 0.4s ease, padding 0.4s ease, height 0.4s ease, opacity 0.3s ease;
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: -10px; /* Чтобы компенсировать gap */
+    opacity: 0;
+    border-width: 0;
+}
+
+
+@keyframes shake-and-slide-out {
+    0% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60% {
+        transform: translateX(5px);
+    }
+    70% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(150%);
+        opacity: 0;
+    }
 }
 
 
@@ -984,19 +1228,29 @@ body {
 }
 
 @media (max-width: 992px) {
+    .action-buttons {
+        display: none;
+    }
+    .lesson-nav {
+        display: flex;
+    }
     .overlay {
         display: block;
+    }
+    .content-wrapper .breadcrumbs{
+        display: none;
     }
     .lesson-header h1 {
         font-size: 1.5rem;
         line-height: 1.6;
-        padding-top: 50px;
+        padding-top: 0px;
     }
     .description {
         display: table;
-        padding: 1.2rem;
+        padding: 1rem;
     }
-    .description svg {
+    .description .bookmark {
+        display: none;
         margin-top: -30px;
         margin-bottom: 15px;
     }
@@ -1005,5 +1259,374 @@ body {
     }
     .slide h2 {
         font-size: 1.4rem;
+    }
+    .header{
+        height: 50px;
+        border: none;
+        background-color: rgb(253 253 253 / 80%);
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(10px);
+    }
+    .header .nav-back{
+        display: flex;
+    }
+    .header .nav{
+        display: none;
+    }
+    .header .logo{
+        display: none;
+    }
+    .header .current-lesson{
+        display: flex;
+    }
+    .open-settings{
+        display: flex;
+    }
+    .header .settings {
+        width: 250px;
+        height: auto;
+        display: none;
+        justify-content: start;
+        padding-right: 0px;
+        flex-direction: column;
+        position: absolute;
+        top: 50px;
+        right: 1rem;
+        background: #f7f7f7;
+        border-bottom-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    .header .settings.active {
+        display: flex;
+    }
+    .header .settings .lang-btn,
+    .header .settings .profile-link,
+    .header .settings .theme-switch,
+    .header .settings .share{
+        width: 100%;
+        height: 60px;
+        justify-content: start;
+        align-items: center;
+        display: flex;
+        cursor: pointer;
+        gap: 10px;
+        padding: 1rem;
+        color: #000;
+        text-decoration: none;
+    }
+    .header .settings .span-text{
+        display: flex;
+        align-items: center;
+    }
+    .header .current-lang.desktop{
+        display: none;
+    }
+    .header .current-lang.mobile{
+        display: flex;
+    }
+    .header .current-lang .lang-icon{
+        font-size: 0.95rem;
+        width: 25px;
+    }
+    .lang-dropdown {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        border: none;
+        width: 250px;
+    }
+    .lang-dropdown a{
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    .sidebar{
+        top: 0;
+        z-index: 1002;
+        height: 100%;
+    }
+    .panel{
+        max-width: 100%;
+        top: 0;
+        z-index: 1002;
+        height: 100%;
+    }
+    .note-form, .chat-form{
+        max-width: 100%;
+    }
+    .chat-form {
+        padding-bottom: 0rem;
+    }
+}
+/* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ --- */
+body.dark-theme {
+    background: #1e1e1e;
+    background: #252525;
+    color: #e0e0e0;
+    font-weight: 300;
+}
+
+body.dark-theme .header,
+body.dark-theme .sidebar,
+body.dark-theme .panel {
+    background-color: #252525;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+body.dark-theme .header {
+    background-color: rgba(37, 37, 37, 0.8);
+}
+
+body.dark-theme .header .nav a.assist{
+    color: #000;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+body.dark-theme .header .nav a.assist:hover{
+    box-shadow: 0 0 30px 0 rgb(255 255 255 / 30%);
+}
+
+body.dark-theme .header .nav-back{
+    color: #e0e0e0;
+}
+
+body.dark-theme .lesson-nav {
+    background-color: rgba(37, 37, 37, 0.8);
+}
+
+body.dark-theme .lesson-nav button svg{
+    color: #fff;
+}
+
+body.dark-theme .breadcrumbs-link,
+body.dark-theme .breadcrumbs svg {
+    color: #a0a0a0;
+    opacity: 0.7;
+}
+
+body.dark-theme .breadcrumbs-link:hover{
+    color:#e0e0e0;
+}
+
+body.dark-theme .action-buttons button{
+    background: #252525;
+}
+
+body.dark-theme .action-buttons button svg{
+    color: #fff;
+}
+
+body.dark-theme .action-buttons button:hover{
+    background: #444444
+}
+
+body.dark-theme .action-buttons button:hover svg{
+    opacity: 1;
+}
+
+.action-buttons button:hover::before {
+    color: #a0a0a0;
+}
+
+body.dark-theme .lesson-header h1{
+    font-weight: 600;;
+}
+
+body.dark-theme .lesson-plan a {
+    color: #c0c0c0;
+    font-weight: 300;
+}
+
+body.dark-theme .lesson-plan a:hover,
+body.dark-theme .lesson-plan a.active {
+    background: #333;
+    color: #fff;
+}
+
+body.dark-theme .description {
+    background: #2c2c2c;
+    color: #d0d0d0;
+}
+
+body.dark-theme .slide {
+    border-bottom-color: #333;
+}
+
+body.dark-theme .answer-btn {
+    background: #2c2c2c;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-theme .answer-btn:hover,
+body.dark-theme .answer-btn.selected {
+    background: #383838;
+}
+
+body.dark-theme .answer-btn .checkbox-icon {
+    border-color: #777;
+}
+
+body.dark-theme .answer-btn.selected .checkbox-icon {
+    background-color: #e0e0e0;
+    border-color: #e0e0e0;
+    box-shadow: inset 0 0 0 3px #2c2c2c;
+}
+
+body.dark-theme .note.correct {
+    border-color: #3a5a40;
+    background-color: #2a3a2f;
+}
+
+body.dark-theme .note.incorrect {
+    border-color: #6e3b3b;
+    background-color: #4a2e2e;
+}
+
+body.dark-theme .close-sidebar{
+    color: #fff;
+}
+
+body.dark-theme .close-panel{
+    color: #fff;
+}
+
+body.dark-theme .panel-header .tab-header {
+    color: #a0a0a0;
+}
+
+body.dark-theme .panel-header .tab-header:hover {
+    background: #333;
+    color: #fff;
+}
+
+body.dark-theme .panel-header .tab-header.active {
+    background: #444;
+    color: #fff;
+}
+
+body.dark-theme .panel-content .note:hover {
+    background: #333;
+}
+
+body.dark-theme .note-form .btn, 
+body.dark-theme .chat-form .btn {
+    border: 1px solid #e0e0e0;
+    color: #e0e0e0;
+}
+
+body.dark-theme .note-form .btn:hover, 
+body.dark-theme .chat-form .btn:hover {
+    background: #fff;
+    border-color: #fff;
+    color: #000;
+}
+
+body.dark-theme .note-form textarea,
+body.dark-theme .chat-form textarea {
+    background: #2c2c2c;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-theme .note-form textarea:focus,
+body.dark-theme .chat-form textarea:focus {
+    border-color: #a0a0a0;
+}
+
+body.dark-theme .assistant-message {
+    background-color: #383838;
+    color: #e0e0e0;
+}
+
+body.dark-theme .user-message {
+    background-color: #0056b3;
+}
+
+body.dark-theme .panel-cta-btn {
+    background: #333;
+    color: #e0e0e0;
+}
+
+body.dark-theme .panel-cta-btn:hover {
+    background: #e0e0e0;
+    color: #1a1a1a;
+}
+
+body.dark-theme .note-modal-content {
+    background: #2c2c2c;
+    color: #e0e0e0;
+}
+
+body.dark-theme .close-modal-btn svg {
+    stroke: #a0a0a0;
+}
+
+body.dark-theme .note-modal-content p {
+    color: #a0a0a0;
+}
+
+body.dark-theme .note-actions svg{
+    color: #e0e0e0;
+    background: #444444;
+}
+
+body.dark-theme .note-actions svg:hover{
+    color: #fff;
+}
+
+body.dark-theme .btn-secondary {
+    background-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-theme .btn-secondary:hover {
+    background-color: #555;
+}
+
+body.dark-theme .edit-note-textarea {
+    background: #252525;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-theme .edit-note-textarea:focus {
+    border-color: #e0e0e0;
+}
+
+body.dark-theme .lang-dropdown {
+    background-color: #252525;
+    border-color: #333;
+}
+
+body.dark-theme .lang-dropdown a {
+    color: #e0e0e0;
+}
+
+body.dark-theme .lang-dropdown a:hover {
+    background-color: #333;
+}
+
+body.dark-theme .lang-dropdown a.active {
+    background-color: #444;
+}
+
+body.dark-theme .header .settings {
+    background: transparent;
+}
+
+body.dark-theme .header .settings .profile-link,
+body.dark-theme .header .settings .theme-switch,
+body.dark-theme .header .settings .share,
+body.dark-theme .header .settings .lang-btn {
+    color: #e0e0e0;
+}
+
+
+@media (max-width: 992px) {
+
+    body.dark-theme .header .settings{
+        background: #3a3a3a;
     }
 }
