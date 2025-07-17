@@ -17,7 +17,8 @@ body {
     max-width: 600px;
     margin: 0 auto;
     padding: 1rem;
-    margin-top: 50px;
+    padding-top: 0;
+    margin-top: 60px;
 }
 
 .content-wrapper .breadcrumbs{
@@ -49,14 +50,16 @@ body {
 }
 
 .lesson-banner-img{
-    border-radius: 15px;
-    width: 100%;
+    border-radius: 0px;
+    width: calc(100% + 172px);
     margin-bottom: 20px;
+    aspect-ratio: 16 / 9;
+    margin-left: -86px;
 }
 
 .lesson-header h1 {
-    /* margin: 0 0 2rem 0; */
-    margin: 0 0 1rem 0;
+    margin: 0 0 2rem 0;
+    /* margin: 0 0 1rem 0; */
     font-size: 2.25rem;
     font-weight: 700;
     line-height: 1.5;
@@ -482,7 +485,7 @@ body {
 .lesson-plan a {
     color: #495057;
     text-decoration: none;
-    font-weight: 300;
+    font-weight: 400;
     padding: 0.8rem 1rem;
     background: transparent;
     border-bottom: 0px solid #dee2e6;
@@ -814,6 +817,7 @@ body {
     padding-top: 15px;;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -876,7 +880,7 @@ body {
     color: #ffffff;
 }
 
-.note-form .minibtn,
+.note-form .mini-btn,
 .chat-form .mini-btn{
     position: absolute;
     right: 7px;
@@ -892,7 +896,7 @@ body {
     cursor: pointer;
 }
 
-.note-form .minibtn:hover,
+.note-form .mini-btn:hover,
 .chat-form .mini-btn:hover{
     background: #000000;
     color: #ffffff;
@@ -932,6 +936,7 @@ body {
 .panel-cta {
     position: fixed;
     top: 50%;
+    margin-top: -11px;
     right: 50%;
     transform: translate(650px, -50%);
     width: 250px;
@@ -1213,6 +1218,7 @@ body {
     }
     .content-wrapper {
         padding: 4.5rem 1rem;
+        padding-top: 0;
         transition: transform 0.4s ease;
     }
     .sidebar{
@@ -1236,6 +1242,14 @@ body {
     }
     .overlay {
         display: block;
+    }
+    .lesson-banner-img{
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+    }
+    .content-wrapper{
+        padding-top: 0;
+        margin-top: 50px;
     }
     .content-wrapper .breadcrumbs{
         display: none;
@@ -1355,6 +1369,9 @@ body {
     }
     .chat-form {
         padding-bottom: 0rem;
+    }
+    .note-modal-content {
+        padding: 1rem;
     }
 }
 /* --- СТИЛИ ДЛЯ ТЕМНОЙ ТЕМЫ --- */
@@ -1544,6 +1561,20 @@ body.dark-theme .user-message {
     background-color: #0056b3;
 }
 
+body.dark-theme .note-form .mini-btn, 
+body.dark-theme .chat-form .mini-btn{
+    background: #383838
+}
+
+body.dark-theme .note-form .mini-btn:hover, 
+body.dark-theme .chat-form .mini-btn:hover{
+    background: #000;
+}
+
+body.dark-theme .panel-cta-title{
+    color: #7b7b7b;
+}
+
 body.dark-theme .panel-cta-btn {
     background: #333;
     color: #e0e0e0;
@@ -1555,7 +1586,7 @@ body.dark-theme .panel-cta-btn:hover {
 }
 
 body.dark-theme .note-modal-content {
-    background: #2c2c2c;
+    background: #252525;
     color: #e0e0e0;
 }
 
@@ -1567,13 +1598,31 @@ body.dark-theme .note-modal-content p {
     color: #a0a0a0;
 }
 
+body.dark-theme .go-to-edit-link{
+    border-color: #333;
+    color: #9f9f9f;
+}
+
+body.dark-theme .go-to-edit-link:hover{
+    color: #fff;
+}
+
 body.dark-theme .note-actions svg{
-    color: #e0e0e0;
+    color: #a0a0a0;
     background: #444444;
 }
 
 body.dark-theme .note-actions svg:hover{
     color: #fff;
+}
+
+body.dark-theme .btn-primary{
+    color: #000;
+    background: #fff;
+}
+
+body.dark-theme .btn-primary:hover{
+    box-shadow: 0 0 30px 0 rgb(255 255 255 / 30%);
 }
 
 body.dark-theme .btn-secondary {
@@ -1586,13 +1635,13 @@ body.dark-theme .btn-secondary:hover {
 }
 
 body.dark-theme .edit-note-textarea {
-    background: #252525;
+    background: #2c2c2c;
     border-color: #444;
     color: #e0e0e0;
 }
 
 body.dark-theme .edit-note-textarea:focus {
-    border-color: #e0e0e0;
+    border-color: #a0a0a0;
 }
 
 body.dark-theme .lang-dropdown {
@@ -1628,5 +1677,342 @@ body.dark-theme .header .settings .lang-btn {
 
     body.dark-theme .header .settings{
         background: #3a3a3a;
+    }
+}
+
+
+
+
+/* ======== Coffee Theme ======== */
+body.coffee-theme {
+    background: #f7f1e6;
+    color: #443a1f;
+}
+
+body.coffee-theme .header,
+body.coffee-theme .sidebar,
+body.coffee-theme .panel {
+    background-color: #f7f1e6;
+    border-color: #e3d9c7;
+    color: #443a1f;
+}
+
+body.coffee-theme .header {
+    background-color: rgb(247 239 225 / 50%);
+}
+
+body.coffee-theme .header a{
+    color: #443a1f;
+    transition: all 0.3s ease;
+}
+
+body.coffee-theme .header a:hover{
+    color: #443a1f;
+}
+
+body.coffee-theme .header .nav a.assist{
+    background: #715f4d;
+    color: #f7f1e6;
+    transition: all 0.3s ease;
+}
+
+body.coffee-theme .header .nav a.assist:hover{
+    background: #000;
+    color: #fff;
+}
+
+body.coffee-theme .header .nav-back{
+    color: #715f4d;
+}
+
+body.coffee-theme .lesson-nav {
+    background: #fff;
+    background-color: rgb(255 255 255 / 70%);
+}
+
+body.coffee-theme .lesson-nav button svg{
+    color: #443a1f;
+}
+
+body.coffee-theme .breadcrumbs-link,
+body.coffee-theme .breadcrumbs svg {
+    color: #5f5539;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+body.coffee-theme .breadcrumbs-link:hover{
+    opacity: 1;
+}
+
+body.coffee-theme .action-buttons button{
+    background: #f7f1e6;
+    color: #584e35;
+}
+
+body.coffee-theme .action-buttons button svg{
+    opacity: 0.7;
+}
+
+body.coffee-theme .action-buttons button:hover{
+    background: #ece3d3;
+}
+
+body.coffee-theme .action-buttons button:hover svg{
+    opacity: 1;
+}
+
+.action-buttons button:hover::before {
+    color: #5f5539;
+}
+
+body.coffee-theme .lesson-header h1{
+    font-weight: 700;
+}
+
+body.coffee-theme .lesson-plan a {
+    color: #5f5539;
+    font-weight: 400;
+}
+
+body.coffee-theme .lesson-plan a:hover,
+body.coffee-theme .lesson-plan a.active {
+    background: #e3d9c7;
+    color: #443a1f;
+}
+
+body.coffee-theme .lesson-plan a::before {
+    color: rgb(95 85 57 / 60%);
+}
+
+body.coffee-theme .description {
+    background: #ece3d3;
+    color: #443a1f;
+}
+
+body.coffee-theme .slide {
+    border-bottom-color: rgb(227 217 199 / 50%);
+}
+
+body.coffee-theme .answer-btn {
+    background: #f8f6f3;
+    border: 1px solid #e3d9c7;
+}
+
+body.coffee-theme .answer-btn:hover,
+body.coffee-theme .answer-btn.selected {
+    background: rgb(227 217 199 / 60%);
+}
+
+body.coffee-theme .answer-btn .checkbox-icon {
+    border-color: #e3d9c7;
+}
+
+body.coffee-theme .answer-btn:hover .checkbox-icon {
+    border-color:#e3d9c7;
+}
+
+body.coffee-theme .answer-btn.selected .checkbox-icon {
+    background-color: #5f5539;
+    border-color: #5f5539;
+    box-shadow: inset 0 0 0 3px #fff;
+}
+
+body.coffee-theme .note.correct {
+    border-color: #94e1a4;
+    background-color: #daf0e0;
+}
+
+body.coffee-theme .note.incorrect {
+    border-color: #f29494;
+    background-color: #ffebeb;
+}
+
+body.coffee-theme .close-sidebar{
+    color: rgb(94 84 56 / 60%);
+}
+
+body.coffee-theme .close-panel{
+    color: rgb(94 84 56 / 60%);
+}
+
+body.coffee-theme .panel-header .tab-header {
+    color: #998e6f;
+}
+
+body.coffee-theme .panel-header .tab-header:hover {
+    background: rgb(227 217 199 / 40%);
+    color: #5f5538;
+}
+
+body.coffee-theme .panel-header .tab-header.active {
+    background: rgb(227 217 199);
+    color: #5f5538;
+}
+
+body.coffee-theme .panel-content .note:hover {
+    background: rgb(227 217 199 / 40%);
+}
+
+body.coffee-theme .note-form .btn, 
+body.coffee-theme .chat-form .btn {
+    border: none;
+    background: #715f4d;
+    color: #f7f1e6;
+}
+
+body.coffee-theme .note-form .btn:hover, 
+body.coffee-theme .chat-form .btn:hover {
+    background: #000;
+    color: #fff;
+}
+
+body.coffee-theme .note-form textarea,
+body.coffee-theme .chat-form textarea {
+    border: 1px solid rgb(227 217 199);
+    background: #f8f6f3;
+}
+
+body.coffee-theme .note-form textarea:focus,
+body.coffee-theme .chat-form textarea:focus {
+    border-color: #715f4d;
+}
+
+body.coffee-theme .assistant-message {
+    background-color: #efe8da;
+    color: #443a1f;
+}
+
+body.coffee-theme .user-message {
+    background-color: #715f4d;
+    color: #f7f1e6;
+}
+
+body.coffee-theme .note-form .mini-btn, 
+body.coffee-theme .chat-form .mini-btn{
+    background: #715f4d;
+    color: #f7f1e6;
+}
+
+body.coffee-theme .note-form .mini-btn:hover, 
+body.coffee-theme .chat-form .mini-btn:hover{
+    background: #000;
+    color: #fff;
+}
+
+body.coffee-theme .panel-cta-title{
+    color: #212529;
+}
+
+body.coffee-theme .panel-cta-btn {
+    background: #ece3d3;
+    color: #5f5538;
+}
+
+body.coffee-theme .panel-cta-btn:hover {
+    background: #715f4d;
+    color: #f7f1e6;
+}
+
+body.coffee-theme .note-modal-content {
+    background: #f7f1e6;
+    color: #443a1f;
+}
+
+body.coffee-theme .close-modal-btn svg {
+    stroke: rgb(94 84 56 / 60%);
+}
+
+body.coffee-theme .note-modal-content p {
+    color: #5f5538;
+}
+
+body.coffee-theme .note-actions svg{
+    color: #998e6f;
+    background: #e3d9c7;
+}
+
+body.coffee-theme .note-actions svg:hover{
+    color: #443a1f;
+}
+
+body.coffee-theme .btn-secondary {
+    background: rgb(227 217 199 / 40%);
+    color: #443a1f;
+}
+
+body.coffee-theme .btn-secondary:hover {
+    background-color: #e3d9c7;
+}
+
+body.coffee-theme .btn-primary{
+    background: #715f4d;
+    color: #f7f1e6;
+}
+
+body.coffee-theme .btn-primary:hover {
+    background: #000;
+    color: #fff;
+}
+
+body.coffee-theme .edit-note-textarea {
+    border-color: rgb(227 217 199);
+    background: #f8f6f3;
+}
+
+body.coffee-theme .edit-note-textarea:focus {
+    border-color: #715f4d;
+}
+
+body.coffee-theme .go-to-edit-link{
+    border-color: #e3d9c7;
+}
+
+body.coffee-theme .lang-dropdown {
+    background-color: #f1eadc;
+    border: 1px solid #e3d9c7;
+}
+
+body.coffee-theme .lang-dropdown a {
+    color: #212529;
+}
+
+body.coffee-theme .lang-dropdown a:hover {
+    background-color: #ece3d3;
+}
+
+body.coffee-theme .lang-dropdown a.active {
+    background-color: #e3d9c7;
+}
+
+body.coffee-theme .header .settings {
+    background: transparent;
+}
+
+body.coffee-theme .header .settings .profile-link,
+body.coffee-theme .header .settings .theme-switch,
+body.coffee-theme .header .settings .share,
+body.coffee-theme .header .settings .lang-btn {
+    color: rgb(95 85 57 / 60%);
+}
+
+body.coffee-theme .header .settings .profile-link:hover,
+body.coffee-theme .header .settings .theme-switch:hover,
+body.coffee-theme .header .settings .share:hover,
+body.coffee-theme .header .settings .lang-btn:hover {
+    color: #443a1f;
+}
+
+@media (max-width: 992px) {
+
+    body.coffee-theme .header .settings{
+        background: #f1eadc;
+    }
+
+    body.coffee-theme .header .settings .profile-link, 
+    body.coffee-theme .header .settings .theme-switch, 
+    body.coffee-theme .header .settings .share, 
+    body.coffee-theme .header .settings .lang-btn {
+        color: rgb(95 85 57);
     }
 }

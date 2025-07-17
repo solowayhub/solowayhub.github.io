@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const DESKTOP_BREAKPOINT = 992;
 
-    let isDesktop = window.innerWidth > DESKTOP_BREAKPOINT;
+    let isDesktop;
 
     function openSidebar() {
         body.classList.add('sidebar-open');
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isDesktop) {
                 body.classList.add('desktop');
                 openSidebar(); // Открываем по умолчанию на десктопе
-                openPanel('note'); // Открываем с активной вкладкой 'note'
             } else {
                 body.classList.remove('desktop');
                 closeSidebar(); // Закрываем на мобильных по умолчанию
@@ -405,27 +404,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Логика переключения темы ---
     const themeSwitch = document.querySelector('.theme-switch');
     if (themeSwitch) {
-        themeSwitch.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            
-            // Сохраняем выбор пользователя
-            if (body.classList.contains('dark-theme')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-
-            // Меняем активную иконку
-            const themeItems = themeSwitch.querySelectorAll('.theme-item');
-            themeItems.forEach(item => item.classList.toggle('active'));
-        });
-    }
-
-    // Проверяем сохраненную тему при загрузке страницы
-    if (themeSwitch && localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-theme');
+        const themes = ['light', 'dark', 'coffee'];
         const themeItems = themeSwitch.querySelectorAll('.theme-item');
-        themeItems.forEach(item => item.classList.toggle('active'));
+
+        const applyTheme = (theme) => {
+            // 1. Удаляем все классы тем с body
+            body.classList.remove('dark-theme', 'coffee-theme');
+            
+            // 2. Добавляем нужный класс, если это не светлая тема
+            if (theme !== 'light') {
+                body.classList.add(`${theme}-theme`);
+            }
+            
+            // 3. Сохраняем выбор в localStorage
+            localStorage.setItem('theme', theme);
+
+            // 4. Обновляем активную иконку
+            const themeIndex = themes.indexOf(theme);
+            themeItems.forEach((item, index) => {
+                item.classList.toggle('active', index === themeIndex);
+            });
+        };
+
+        themeSwitch.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            const currentIndex = themes.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            const nextTheme = themes[nextIndex];
+            applyTheme(nextTheme);
+        });
+
+        // Проверяем сохраненную тему при загрузке страницы
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme && themes.includes(savedTheme)) {
+            applyTheme(savedTheme);
+        } else {
+            // Если в localStorage ничего нет, устанавливаем тему по умолчанию (светлую)
+            applyTheme('light');
+        }
     }
 
     // --- ОБЩАЯ ЛОГИКА МОДАЛЬНЫХ ОКОН ---
@@ -647,8 +663,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Инициализация при загрузке
-    handleResize();
     lucide.createIcons();
+    handleResize();
 
     // Повторная инициализация иконок после возможной смены темы при загрузке
     if (localStorage.getItem('theme') === 'dark') {
