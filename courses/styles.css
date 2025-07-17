@@ -1442,7 +1442,7 @@ body.dark-theme .action-buttons button:hover svg{
     opacity: 1;
 }
 
-.action-buttons button:hover::before {
+body.dark-theme .action-buttons button:hover::before {
     color: #a0a0a0;
 }
 
