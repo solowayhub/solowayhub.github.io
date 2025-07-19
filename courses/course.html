@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Родительство: Как вырастить счастливых детей и воспитать достойных людей</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="course.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">Mental Platform</div>
+        <a href="" class="nav-back"><i data-lucide="chevron-left"></i></a>
+        <nav class="nav">
+            <a>Home</a>
+            <a>Features</a>
+            <a>Courses</a>
+            <a>Lessons</a>
+            <a>Pricing</a>
+            <a class="assist">AI Assistant</a>
+        </nav>
+        <div class="current-course">Родительство</div>
+        <div class="open-settings"><i data-lucide="ellipsis-vertical"></i></div>
+        <div class="settings">
+            <div class="lang-btn">
+                <span class="current-lang desktop">RU</span>
+                <span class="current-lang mobile">
+                    <div class="lang-icon">RU</div>
+                    <span>Выбрать язык</span>
+                </span>
+                <div class="lang-dropdown">
+                    <a href="#" data-lang="RU" class="active"><i data-lucide="check"></i><span>Русский</span></a>
+                    <a href="#" data-lang="EN"><i data-lucide="check"></i><span>English</span></a>
+                    <a href="#" data-lang="ES"><i data-lucide="check"></i><span>Español</span></a>
+                </div>
+            </div>
+            <a class="profile-link" href="">
+                <i data-lucide="user-round"></i>
+                <span class="span-text">Profile</span>
+            </a>
+            <div class="theme-switch">
+                <div class="theme-item active">
+                    <i data-lucide="sun"></i>
+                    <span class="span-text">Светлая</span>
+                </div>
+                <div class="theme-item">
+                    <i data-lucide="moon"></i>
+                    <span class="span-text">Темная</span>
+                </div>
+                <div class="theme-item">
+                    <i data-lucide="coffee"></i>
+                    <span class="span-text">Кофейная</span>
+                </div>
+            </div>
+            <div class="share">
+                <i data-lucide="share-2"></i>
+                <span class="span-text">Поделиться</span>
+            </div>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>План курса</h3>
+            <button class="close-sidebar" id="close-sidebar" aria-label="Закрыть меню"><i data-lucide="x"></i></button>
+        </div>
+        <nav class="course-plan">
+            <ul>
+                <li><a href="#" class="plan-link" data-target="module-1">Почему нельзя "включить" фокус силой?</a></li>
+                <li><a href="#" class="plan-link" data-target="module-2">Мозг — это поезд, а не автомобиль</a></li>
+                <li><a href="#" class="plan-link" data-target="module-3">Ловушка "сейчас соберусь с мыслями"</a></li>
+                <li><a href="#" class="plan-link" data-target="modele-4">Что такое ритуал входа в поток?</a></li>
+                <li><a href="#" class="plan-link" data-target="module-5">Как это работает на уровне мозга?</a></li>
+                <li><a href="#" class="plan-link" data-target="module-6">Пример: ритуал писателя</a></li>
+                <li><a href="#" class="plan-link" data-target="module-7">Пример: ритуал программиста</a></li>
+                <li><a href="#" class="plan-link" data-target="module-8">Создаем ваш личный ритуал: 4 шага</a></li>
+                <li><a href="#" class="plan-link" data-target="module-9">Шаг 1: Определите место</a></li>
+                <li><a href="#" class="plan-link" data-target="module-10">Шаг 2: Определите триггер</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="action-buttons">
+        <button class="open-sidebar" id="open-sidebar" aria-label="Открыть меню" data-tooltip="План курса"><i
+                data-lucide="menu"></i></button>
+        <button class="review-btn" aria-label="Отзывы людей" data-tooltip="Отзывы людей" data-tab="reviews"><i
+                data-lucide="star"></i></button>
+        <button class="share-btn" aria-label="Поделиться курсом" data-tooltip="Поделиться курсом"><i
+                data-lucide="share-2"></i></button>
+    </div>
+
+    <div class="course-nav">
+        <button class="open-sidebar" id="mobile-open-sidebar"><i data-lucide="menu"></i></button>
+        <button class="mobile-reviews-tab-btn" data-tab="reviews"><i data-lucide="star"></i></button>
+        <button class="mobile-faq-tab-btn" data-tab="faq"><i data-lucide="help-circle"></i></button>
+        <button class="open-panel" id="mobile-open-panel" data-tab="assistant"><i
+                data-lucide="message-circle-more"></i></button>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <main class="course-wrapper">
+        <img class="course-banner-img"
+            src="https://novarobota.ua/storage/editor/fotos/a1fc6b11dd69ae33039c669135758576.jpg">
+        <div class="course-header">
+            <h1>Родительство: Как вырастить счастливых детей и воспитать достойных людей</h1>
+            </divr>
+            <section class="description">
+                <i class="bookmark" data-lucide="bookmark"></i>
+                <div>
+                    <h3>Этот мегакурс – ваш самый полный и добрый навигатор в мире родительства.</h3>
+                    <p>Курс не сделает вас "идеальным" родителем, но поможет стать лучшим родителем именно для вашего
+                        ребенка.</p>
+                    <p>Вы узнаете как построить семью, основанную на любви, уважении и доверии. Научитесь справляться с
+                        трудностями без выгорания. Получите уверенность на каждом этапе взросления ребенка.</p>
+                    <p>Эти 10 модулей – инвестиция в счастливое будущее вашей семьи. Изучайте весь курс, отдельные
+                        модули или уроки.</p>
+                </div>
+            </section>
+
+            <section class="modules">
+                <h2>Модули курса</h2>
+                <div class="modules-list">
+                    <div class="module-item">
+                        <h3 class="module-title">1. Готовимся стать родителями <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Вы исследуете ваши надежды, страхи и ожидания. Подготовитесь материально и
+                                психологически. Заложете основы партнерских отношений и выработаете семейные ценности,
+                                которые станут опорой для вас и ребенка.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 100 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.9 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-item">
+                        <h3 class="module-title">2. Беременность и роды <i class="module-item_header-icon"
+                                data-lucide="chevron-down"></i></h3>
+                        <div class="module-description">
+                            <p>Описание для второго модуля.</p>
+                            <div class="module-item-cta">
+                                <a href="" class="module-item-btn">Перейти в модуль <i
+                                        data-lucide="chevron-right"></i></a>
+                                <div class="cta-bullet">
+                                    <div class="cta-bullet-item"><i data-lucide="graduation-cap"></i> 50 уроков</div>
+                                    <div class="cta-bullet-item"><i data-lucide="star"></i> 4.8 оценка</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="video-stories">
+
+            </section>
+
+            <section class="review-slider-wrapper">
+                <h2>Оценка 4.9 <div class="see-all-review" data-tab="reviews">Смотреть все <i
+                            data-lucide="chevron-right"></i></div>
+                </h2>
+                <div class="review-slider-container">
+                    <div class="swiper review-slider">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide review-item" data-tab="reviews">
+                                <div class="review-body">
+                                    <p>Это лучший курс по родительству! Все четко, по делу, без воды. Помогло наладить
+                                        контакт с подростком.</p>
+                                </div>
+                                <div class="reviews-header">
+                                    <div class="author"><img class="author-img" src="https://i.pravatar.cc/40?u=1"><span
+                                            class="author-name">Анна К.</span></div>
+                                    <div class="review-rate"><i data-lucide="star"></i><i data-lucide="star"></i><i
+                                            data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide review-item" data-tab="reviews">
+                                <div class="review-body">
+                                    <p>Очень глубокий и полезный материал. Особенно понравился модуль про эмоциональный
+                                        интеллект. Рекомендую!</p>
+                                </div>
+                                <div class="reviews-header">
+                                    <div class="author"><img class="author-img" src="https://i.pravatar.cc/40?u=1"><span
+                                            class="author-name">Мария П.</span></div>
+                                    <div class="review-rate"><i data-lucide="star"></i><i data-lucide="star"></i><i
+                                            data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide review-item" data-tab="reviews">
+                                <div class="review-body">
+                                    <p>Курс помог мне стать увереннее как отцу. Много практических советов, которые
+                                        реально работают.</p>
+                                </div>
+                                <div class="reviews-header">
+                                    <div class="author"><img class="author-img" src="https://i.pravatar.cc/40?u=1"><span
+                                            class="author-name">Дмитрий С.</span></div>
+                                    <div class="review-rate"><i data-lucide="star"></i><i data-lucide="star"></i><i
+                                            data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide review-item" data-tab="reviews">
+                                <div class="review-body">
+                                    <p>Структура курса великолепна. Легко найти нужную информацию. Спасибо за вашу
+                                        работу!</p>
+                                </div>
+                                <div class="reviews-header">
+                                    <div class="author"><img class="author-img" src="https://i.pravatar.cc/40?u=1"><span
+                                            class="author-name">Елена В.</span></div>
+                                    <div class="review-rate"><i data-lucide="star"></i><i data-lucide="star"></i><i
+                                            data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="swiper-slide review-item" data-tab="reviews">
+                                <div class="review-body">
+                                    <p>Наконец-то адекватный курс без крайностей. Все основано на науке и здравом
+                                        смысле.</p>
+                                </div>
+                                <div class="reviews-header">
+                                    <div class="author"><img class="author-img" src="https://i.pravatar.cc/40?u=1"><span
+                                            class="author-name">Ольга Н.</span></div>
+                                    <div class="review-rate"><i data-lucide="star"></i><i data-lucide="star"></i><i
+                                            data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </section>
+
+            <section class="course-tab-wrapper" id="course-tabs-section">
+                <div class="course-tabs">
+                    <button class="course-tab-btn active" data-tab="lessons">Уроки</button>
+                    <button class="course-tab-btn" data-tab="reviews">Отзывы</button>
+                    <button class="course-tab-btn" data-tab="faq">FAQ</button>
+                </div>
+                <div class="course-tab-content-wrapper">
+                    <div id="lessons" class="course-tab-content active">
+                        Уроки уроки уроки
+                    </div>
+                    <div id="reviews" class="course-tab-content">
+                        <div class="reviews-filter">
+                            <button class="star-filter all active" data-stars="all">Все</button>
+                            <button class="star-filter" data-stars="5">5 <i data-lucide="star"></i></button>
+                            <button class="star-filter" data-stars="4">4 <i data-lucide="star"></i></button>
+                            <button class="star-filter" data-stars="3">3 <i data-lucide="star"></i></button>
+                            <button class="star-filter" data-stars="2">2 <i data-lucide="star"></i></button>
+                            <button class="star-filter" data-stars="1">1 <i data-lucide="star"></i></button>
+                        </div>
+                        <div class="reviews-list">
+                            <!-- Отзывы будут здесь -->
+                        </div>
+                    </div>
+                    <div id="faq" class="course-tab-content">
+                        <section class="faq-section">
+                            <!-- <div class="desc">
+                            <h2>Часто задаваемые вопросы. </h2>
+                            <span>По любым другим вопросам обращайтесь в <a>чат с ассистентом</a> или в <a>отдел заботы</a>.</span>
+                        </div> -->
+                            <div class="faq-list">
+                                <div class="faq-item">
+                                    <h3 class="faq-question">Для какого возраста детей подходит курс? <i
+                                            class="faq-icon" data-lucide="chevron-down"></i></h3>
+                                    <div class="faq-answer">
+                                        <p>Курс охватывает все этапы родительства, от подготовки к рождению до
+                                            подросткового возраста. Вы найдете полезную информацию для любого этапа.</p>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <h3 class="faq-question">Будет ли у меня доступ к курсу навсегда? <i
+                                            class="faq-icon" data-lucide="chevron-down"></i></h3>
+                                    <div class="faq-answer">
+                                        <p>Да, после покупки вы получаете пожизненный доступ ко всем материалам курса и
+                                            его обновлениям.</p>
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <h3 class="faq-question">Есть ли поддержка или чат с другими родителями? <i
+                                            class="faq-icon" data-lucide="chevron-down"></i></h3>
+                                    <div class="faq-answer">
+                                        <p>Да, у нас есть закрытое сообщество для всех участников курса, где вы можете
+                                            общаться, делиться опытом и получать поддержку.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+    </main>
+
+    <aside class="panel" id="panel">
+        <div class="panel-header">
+            <button class="close-panel" id="close-panel" aria-label="Закрыть панель"><i data-lucide="x"></i></button>
+            <h3>Ассистент</h3>
+        </div>
+        <div class="panel-content">
+            <div class="tab-content active" id="assistant">
+                <div class="chat-list">
+                    <div class="message assistant-message">
+                        Привет! Я твой AI-ассистент. Чем могу помочь в изучении этого урока?
+                    </div>
+                    <div class="message user-message">
+                        Привет! Расскажи кратко, в чем главная идея ритуала входа в поток?
+                    </div>
+                    <div class="message assistant-message">
+                        Главная идея в том, чтобы создать короткую, повторяющуюся последовательность действий (2-5
+                        минут), которая служит для мозга сигналом: "Сейчас будет глубокая работа". Это помогает
+                        переключиться в режим концентрации автоматически, не тратя на это силу воли.
+                    </div>
+                    <div class="message user-message">
+                        Понятно, спасибо!
+                    </div>
+                    <div class="message assistant-message">
+                        Рад помочь! Если нужен будет адрес дроч-салона, то могу подсказать.
+                    </div>
+                </div>
+                <div class="chat-form">
+                    <form>
+                        <textarea type="text" placeholder="Напишите вопрос ассистенту"></textarea>
+                        <div class="mini-btn"><i data-lucide="send-horizontal"></i></div>
+                        <!-- <div class="btn">
+                            <i data-lucide="check-check"></i>
+                            <span>Отправить</span>
+                        </div> -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="panel-cta">
+        <h4 class="panel-cta-title">Изучайте курс более эффективно</h4>
+        <div class="route-cta-btn">
+            <!--<i data-lucide="circle-plus"></i>-->
+            <i data-lucide="route"></i>
+            <span>Создать траекторию</span>
+        </div>
+        <div class="faq-cta-btn" data-tab="faq">
+            <!--<i data-lucide="bot"></i>-->
+            <i data-lucide="circle-help"></i>
+            <span>Частые вопросы</span>
+        </div>
+        <div class="panel-cta-btn">
+            <!--<i data-lucide="bot"></i>-->
+            <i data-lucide="message-circle-more" style="transform: scaleX(-1);"></i>
+            <span>Чат с ассистентом</span>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="course.js" defer></script>
+
+</body>
+
+</html>
