@@ -401,6 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const courseTabWrapper = document.querySelector('.course-tab-wrapper');
     if (courseTabWrapper) {
         const tabButtons = document.querySelectorAll('.course-tab-btn');
+        const tabsIndicator = courseTabWrapper.querySelector('.tabs-indicator');
         const reviewSliderItems = document.querySelectorAll('.review-slider-wrapper .review-item');
         const seeAllReviewBtn = document.querySelector('.see-all-review');
         const faqCtaBtn = document.querySelector('.faq-cta-btn');
@@ -408,76 +409,106 @@ document.addEventListener('DOMContentLoaded', () => {
         const mobileFaqTabBtn = document.querySelector('.mobile-faq-tab-btn');
         const desktopReviewsBtn = document.querySelector('.action-buttons .review-btn');
 
+        const updateIndicator = (swiper) => {
+            if (!tabsIndicator) return;
+
+            const progress = swiper.progress; // Прогресс от 0 до 1
+            const slideCount = swiper.slides.length;
+            if (progress < 0 || progress > 1) return;
+
+            const totalProgress = progress * (slideCount - 1);
+            const fromIndex = Math.floor(totalProgress);
+            const toIndex = fromIndex + 1;
+            const localProgress = totalProgress - fromIndex;
+
+            if (tabButtons[fromIndex] && tabButtons[toIndex]) {
+                const fromTab = tabButtons[fromIndex];
+                const toTab = tabButtons[toIndex];
+
+                const fromLeft = fromTab.offsetLeft;
+                const fromWidth = fromTab.offsetWidth;
+
+                const toLeft = toTab.offsetLeft;
+                const toWidth = toTab.offsetWidth;
+
+                const newLeft = fromLeft + (toLeft - fromLeft) * localProgress;
+                const newWidth = fromWidth + (toWidth - fromWidth) * localProgress;
+
+                tabsIndicator.style.left = `${newLeft}px`;
+                tabsIndicator.style.width = `${newWidth}px`;
+                tabsIndicator.style.transition = 'none';
+            }
+        };
+
+        const setIndicatorToEndPosition = (swiper) => {
+            if (!tabsIndicator) return;
+            const activeTab = tabButtons[swiper.activeIndex];
+            if (activeTab) {
+                tabsIndicator.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                tabsIndicator.style.left = `${activeTab.offsetLeft}px`;
+                tabsIndicator.style.width = `${activeTab.offsetWidth}px`;
+            }
+        };
+
         const courseTabsSwiper = new Swiper('.course-tab-content-wrapper', {
             autoHeight: true,
             spaceBetween: 30,
+            watchSlidesProgress: true,
             on: {
-                slideChange: function () {
-                    const activeIndex = this.activeIndex;
-                    tabButtons.forEach((button, index) => {
-                        button.classList.toggle('active', index === activeIndex);
-                    });
-                    // Дополнительная проверка высоты после смены слайда
-                    setTimeout(() => this.updateAutoHeight(300), 50);
+                progress: function(swiper, progress) {
+                    updateIndicator(swiper);
+                },
+                transitionEnd: function(swiper) {
+                    // Это событие срабатывает после любой анимации,
+                    // включая возврат слайда на место при отмененном свайпе.
+                    setIndicatorToEndPosition(swiper);
                 },
                 init: function(swiper) {
-                     // Инициализация отзывов, если первый слайд - отзывы
+                    setIndicatorToEndPosition(swiper);
                     if (swiper.slides[swiper.activeIndex].id === 'reviews') {
                         setTimeout(initReviews, 50);
                     }
+                },
+                resize: function(swiper) {
+                    setTimeout(() => setIndicatorToEndPosition(swiper), 100);
+                },
+                slideChange: function () {
+                    const activeIndex = this.activeIndex;
+                    tabButtons.forEach((button, index) => {
+                        button.classList.remove('active');
+                        if (index === activeIndex) {
+                            button.classList.add('active');
+                        }
+                    });
+                    scrollToStickyTabs();
+                    setTimeout(() => this.updateAutoHeight(300), 50);
                 }
             }
         });
 
         const scrollToStickyTabs = () => {
             const courseTabs = document.querySelector('.course-tabs');
-            // Если табы уже "прилипли" или их нет, ничего не делаем
             if (!courseTabWrapper || !courseTabs || courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile')) {
                 return;
             }
-
-            // Scroll to tabs so they become sticky
             const header = document.querySelector('.header');
             const headerHeight = header ? header.offsetHeight : 0;
-            // Добавляем +1px для гарантированного "прилипания"
             const offsetPosition = courseTabWrapper.offsetTop - headerHeight + 1;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
         };
-
-        // Переопределяем обработчик смены слайда, чтобы он включал скролл
-        courseTabsSwiper.on('slideChange', function () {
-            const activeIndex = this.activeIndex;
-            tabButtons.forEach((button, index) => {
-                button.classList.toggle('active', index === activeIndex);
-            });
-            scrollToStickyTabs(); // <--- Вот и скролл при каждой смене
-            // Дополнительная проверка высоты после смены слайда
-            setTimeout(() => this.updateAutoHeight(300), 50);
-        });
 
         const activateTabAndScroll = (tabId) => {
             const tabIndex = Array.from(tabButtons).findIndex(btn => btn.getAttribute('data-tab') === tabId);
             if (tabIndex !== -1) {
                 courseTabsSwiper.slideTo(tabIndex);
-                // Оборачиваем в setTimeout, чтобы дать Swiper время обновить DOM и высоту,
-                // что гарантирует корректный расчет offsetTop для скролла.
-                setTimeout(() => {
-                    scrollToStickyTabs();
-                }, 50);
+                setTimeout(() => scrollToStickyTabs(), 50);
             }
         };
 
         tabButtons.forEach((button, index) => {
             button.addEventListener('click', () => {
                 courseTabsSwiper.slideTo(index);
-                // Добавляем задержку, чтобы скролл сработал после начала анимации слайда
-                setTimeout(() => {
-                    scrollToStickyTabs();
-                }, 50);
+                setTimeout(() => scrollToStickyTabs(), 50);
             });
         });
 
