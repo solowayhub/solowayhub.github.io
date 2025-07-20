@@ -551,8 +551,10 @@ if (videoStoriesSection) {
         const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
         if (!paginationContainer) return;
         const bullets = paginationContainer.querySelectorAll('.swiper-pagination-bullet');
+        const activeIndex = swiper.realIndex % REAL_SLIDES_COUNT;
+
         bullets.forEach((bullet, index) => {
-            bullet.classList.toggle('swiper-pagination-bullet-active', index === swiper.realIndex);
+            bullet.classList.toggle('swiper-pagination-bullet-active', index === activeIndex);
         });
     };
 
@@ -566,11 +568,11 @@ if (videoStoriesSection) {
                 nextEl: '.video-slider-container .swiper-button-next',
                 prevEl: '.video-slider-container .swiper-button-prev',
             },
-            pagination: false, // Disable default pagination to create a custom one
+            pagination: false, // Disable default pagination
             on: {
                 init: function(swiper) {
                     const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
-                    paginationContainer.innerHTML = ''; // Clear just in case
+                    paginationContainer.innerHTML = '';
 
                     for (let i = 0; i < REAL_SLIDES_COUNT; i++) {
                         const bullet = document.createElement('span');
@@ -589,13 +591,14 @@ if (videoStoriesSection) {
                     }, { threshold: 0.5 });
                     observer.observe(swiper.el);
                 },
-                slideChange: (swiper) => {
-                    updateCustomPagination(swiper);
+                slideChange: () => {
                     if (activeVideo) {
                         pauseAndMarkVideo(activeVideo);
                     }
                 },
-                slideChangeTransitionEnd: () => {
+                slideChangeTransitionEnd: (swiper) => {
+                    updateCustomPagination(swiper); // Update pagination after transition ends
+
                     document.querySelectorAll('.video-slider .swiper-slide video').forEach(v => {
                         const slide = v.closest('.video-slide');
                         if (v !== activeVideo && !slide.classList.contains('paused')) {
@@ -676,12 +679,12 @@ if (videoStoriesSection) {
     const starFilters = document.querySelectorAll('.star-filter');
 
     const reviews = [
-        { author: 'Алиса', avatar: 'https://i.pravatar.cc/40?u=1', rating: 5, text: 'Это лучший курс, который я когда-либо проходила! Все очень структурировано и понятно.' },
-        { author: 'Борис', avatar: 'https://i.pravatar.cc/40?u=2', rating: 5, text: 'Материал подан великолепно. Ментальные модели изменили мой подход к работе.' },
-        { author: 'Вероника', avatar: 'https://i.pravatar.cc/40?u=3', rating: 4, text: 'Хороший курс, много полезной информации. Хотелось бы больше практических заданий.' },
-        { author: 'Григорий', avatar: 'https://i.pravatar.cc/40?u=4', rating: 5, text: 'Просто пушка! Рекомендую всем, кто хочет прокачать свое мышление.' },
-        { author: 'Диана', avatar: 'https://i.pravatar.cc/40?u=5', rating: 3, text: 'Неплохо, но некоторые темы показались слишком сложными для новичка.' },
-        { author: 'Евгений', avatar: 'https://i.pravatar.cc/40?u=6', rating: 5, text: 'Отличная структура, прекрасная подача. Спасибо авторам!' },
+        { author: 'Алиса', avatar: 'https://i.pravatar.cc/40?u=1', rating: 5, text: ['Это лучший курс, который я когда-либо проходила! Все очень структурировано и понятно.', 'Особенно понравился модуль про эмоциональный интеллект. Уже применяю знания в жизни.'] },
+        { author: 'Борис', avatar: 'https://i.pravatar.cc/40?u=2', rating: 5, text: ['Материал подан великолепно. Ментальные модели изменили мой подход к работе.'] },
+        { author: 'Вероника', avatar: 'https://i.pravatar.cc/40?u=3', rating: 4, text: ['Хороший курс, много полезной информации. Хотелось бы больше практических заданий.'] },
+        { author: 'Григорий', avatar: 'https://i.pravatar.cc/40?u=4', rating: 5, text: ['Просто пушка! Рекомендую всем, кто хочет прокачать свое мышление.'] },
+        { author: 'Диана', avatar: 'https://i.pravatar.cc/40?u=5', rating: 3, text: ['Неплохо, но некоторые темы показались слишком сложными для новичка.'] },
+        { author: 'Евгений', avatar: 'https://i.pravatar.cc/40?u=6', rating: 2, text: ['Структура хорошая, но подача суховата.'] },
     ];
 
     function renderReviews(filter = 'all') {
@@ -700,13 +703,15 @@ if (videoStoriesSection) {
             const reviewElement = document.createElement('div');
             reviewElement.className = 'review-item';
 
-            const starsHtml = Array(5).fill(0).map((_, i) =>
-                `<i data-lucide="star"${i < review.rating ? ' class="filled"' : ''}></i>`
+            const starsHtml = Array(review.rating).fill(0).map(() =>
+                `<i data-lucide="star" class="filled"></i>`
             ).join('');
+
+            const textHtml = review.text.map(p => `<p class="review-text">${p}</p>`).join('');
 
             reviewElement.innerHTML = `
             <div class="review-body">
-                <p class="review-text">${review.text}</p>
+                ${textHtml}
             </div>
             <div class="reviews-header">
                 <div class="author">
@@ -733,4 +738,93 @@ if (videoStoriesSection) {
     // Первоначальный рендер отзывов
     renderReviews();
 
+// --- Логика для "липких" табов ---
+    const header = document.querySelector('.header');
+    const courseTabs = document.querySelector('.course-tabs');
+    const tabsPlaceholder = document.querySelector('.tabs-placeholder');
+    let lastScrollY = window.scrollY;
+    let isTabsSticky = false;
+
+    function handleStickyTabs() {
+        // Если одного из элементов нет, ничего не делаем
+        if (!courseTabs || !header || !tabsPlaceholder) return;
+
+        const scrollY = window.scrollY;
+        const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+        const headerHeight = header.offsetHeight;
+
+        // --- Логика для хедера на мобильных ---
+        if (!isDesktop) {
+            // Прячем хедер при скролле вниз, показываем при скролле вверх (если мы не вверху страницы)
+            if (scrollY > headerHeight) {
+                if (scrollDirection === 'down') {
+                    header.classList.add('hidden');
+                    header.classList.remove('visible');
+                } else { // 'up'
+                    header.classList.remove('hidden');
+                    header.classList.add('visible');
+                }
+            } else {
+                header.classList.remove('hidden');
+                header.classList.add('visible');
+            }
+        }
+
+        // --- Общая логика для фиксации табов ---
+        const tabsParentRect = courseTabs.parentElement.getBoundingClientRect();
+        
+        // Точка, в которой табы должны "прилипнуть"
+        const stickPoint = isDesktop
+            ? headerHeight
+            : (header.classList.contains('visible') ? headerHeight : 0);
+
+        if (tabsParentRect.top <= stickPoint && !isTabsSticky) {
+            // СДЕЛАТЬ ЛИПКИМ
+            isTabsSticky = true;
+            tabsPlaceholder.style.height = `${courseTabs.offsetHeight}px`;
+            tabsPlaceholder.classList.add('visible');
+            courseTabs.classList.add(isDesktop ? 'sticky' : 'sticky-mobile');
+            // На мобильных, если хедер видим, добавляем класс для отступа
+            if (!isDesktop && header.classList.contains('visible')) {
+                courseTabs.classList.add('header-visible');
+            }
+        } else if (tabsParentRect.top > stickPoint && isTabsSticky) {
+            // ОТЛЕПИТЬ
+            isTabsSticky = false;
+            tabsPlaceholder.classList.remove('visible');
+            tabsPlaceholder.style.height = '0px';
+            courseTabs.classList.remove('sticky', 'sticky-mobile', 'header-visible');
+        }
+
+        // Если табы уже липкие на мобильном, обновляем их позицию в зависимости от хедера
+        if (isTabsSticky && !isDesktop) {
+            if (header.classList.contains('visible')) {
+                courseTabs.classList.add('header-visible');
+            } else {
+                courseTabs.classList.remove('header-visible');
+            }
+        }
+
+        lastScrollY = scrollY <= 0 ? 0 : scrollY;
+    }
+
+    window.addEventListener('scroll', handleStickyTabs, { passive: true });
+    
+    // Пересчитываем при ресайзе
+    window.addEventListener('resize', () => {
+        // Сбрасываем состояние, чтобы избежать некорректного отображения
+        isTabsSticky = false;
+        if (courseTabs) {
+            courseTabs.classList.remove('sticky', 'sticky-mobile', 'header-visible');
+        }
+        if (tabsPlaceholder) {
+            tabsPlaceholder.classList.remove('visible');
+            tabsPlaceholder.style.height = '0px';
+        }
+        if (header) {
+            header.classList.remove('hidden');
+            header.classList.add('visible');
+        }
+        handleStickyTabs(); // Вызываем для применения правильной логики
+    });
 });
