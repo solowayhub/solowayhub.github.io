@@ -423,10 +423,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(initReviews, 50); // Небольшая задержка для гарантии рендеринга
             }
 
-            // Scroll to tabs
-            const headerOffset = 80;
-            const elementPosition = courseTabWrapper.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            // Если табы уже "прилипли", не скроллим, чтобы избежать прыжка
+            const courseTabs = document.querySelector('.course-tabs');
+            if (courseTabs && (courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile'))) {
+                return;
+            }
+
+            // Scroll to tabs so they become sticky
+            const header = document.querySelector('.header');
+            // На мобильных, если хэдер скрыт, мы все равно должны учитывать его высоту,
+            // так как скролл вверх его покажет.
+            const headerHeight = header ? header.offsetHeight : 0;
+            const offsetPosition = courseTabWrapper.offsetTop - headerHeight;
 
             window.scrollTo({
                 top: offsetPosition,
@@ -743,7 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const scrollY = window.scrollY;
         const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
-        const headerHeight = header.offsetHeight;
+        const headerHeight = header.offsetHeight+1;
 
         // --- Логика для хедера на мобильных ---
         if (!isDesktop) {
@@ -819,4 +827,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         handleStickyTabs(); // Вызываем для применения правильной логики
     });
+
+    // --- Логика для появления CTA в боковой панели ---
+    const descriptionCta = document.querySelector('.description-cta');
+    const panelCta = document.querySelector('.course-cta');
+
+    if (descriptionCta && panelCta) {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    // Проверяем, что это десктопная версия
+                    if (window.innerWidth > DESKTOP_BREAKPOINT) {
+                        // Если элемент ушел за верхний край экрана
+                        if (!entry.isIntersecting && entry.boundingClientRect.bottom < 0) {
+                            panelCta.classList.add('visible');
+                        } else {
+                            panelCta.classList.remove('visible');
+                        }
+                    } else {
+                        // На мобильных устройствах этот блок всегда скрыт
+                        panelCta.classList.remove('visible');
+                    }
+                });
+            },
+            {
+                root: null, // viewport
+                threshold: 0, // Срабатывает как только элемент полностью исчезает или появляется
+                rootMargin: '0px 0px -100% 0px' // Срабатывает, когда элемент полностью уходит за верхний край
+            }
+        );
+
+        observer.observe(descriptionCta);
+
+        // Также нужно проверять при изменении размера окна
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= DESKTOP_BREAKPOINT) {
+                panelCta.classList.remove('visible');
+            }
+        });
+    }
 });

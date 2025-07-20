@@ -959,6 +959,24 @@ h2{
     color: #fff;
 }
 
+.course-cta{
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(-20px);
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s;
+}
+
+.course-cta.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    transition-delay: 0s;
+}
+
 /* --- TABS --- */
 .course-tab-wrapper {
     margin-top: 60px;
