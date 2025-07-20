@@ -480,6 +480,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             button.classList.add('active');
                         }
                     });
+
+                    // Инициализируем отзывы, если переключились на них
+                    if (this.slides[activeIndex] && this.slides[activeIndex].id === 'reviews') {
+                        setTimeout(initReviews, 50);
+                    }
+
                     scrollToStickyTabs();
                     setTimeout(() => this.updateAutoHeight(300), 50);
                 }
@@ -813,6 +819,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Инициализируем отзывы сразу при загрузке страницы
+    initReviews();
 
 // --- Логика для "липких" табов ---
     const header = document.querySelector('.header');
