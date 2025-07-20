@@ -723,8 +723,6 @@ h2{
 
 
 
-
-
 /* --- БОКОВАЯ ПАНЕЛЬ --- */
 .panel{
     position: fixed;
@@ -1071,17 +1069,22 @@ h2{
     flex-direction: column;
     justify-content: space-between;
     height: auto;
-    cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
 }
 
+.review-slider-container .review-item,
+.reviews-list .review-item.collapsed{
+    cursor: pointer !important;
+}
 
-.review-item:hover{
+.review-slider-container .review-item:hover,
+.reviews-list .review-item.collapsed:hover{
     background: #f2f2f2;
 }
 
 .review-body p {
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1rem 0;
     font-size: 1rem;
 }
 
@@ -1089,6 +1092,10 @@ h2{
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.reviews-list .reviews-header{
+    margin-bottom: 15px;
 }
 
 .author {
@@ -1166,9 +1173,140 @@ h2{
     gap: 15px;
 }
 
+/* --- Логика фильтрации --- */
+.reviews-list.filter-active-1 .review-item,
+.reviews-list.filter-active-2 .review-item,
+.reviews-list.filter-active-3 .review-item,
+.reviews-list.filter-active-4 .review-item,
+.reviews-list.filter-active-5 .review-item {
+    display: none;
+}
+
+.reviews-list.filter-active-1 .review-item[data-rating="1"],
+.reviews-list.filter-active-2 .review-item[data-rating="2"],
+.reviews-list.filter-active-3 .review-item[data-rating="3"],
+.reviews-list.filter-active-4 .review-item[data-rating="4"],
+.reviews-list.filter-active-5 .review-item[data-rating="5"] {
+    display: flex;
+}
+
 .reviews-list .review-item{
     padding: 1.5rem;
 }
+
+body.dark-theme .review-item,
+body.dark-theme .review-item:hover {
+    background: #2c2c2c;
+}
+
+body.coffee-theme .review-item,
+body.coffee-theme .review-item:hover {
+    background: #ece3d3;
+}
+
+.review-body {
+    transition: max-height 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+/* Стили для кнопки "Читать полностью" */
+.review-expand-btn {
+    display: none; /* По умолчанию кнопка скрыта */
+    background: rgb(235 235 235);
+    backdrop-filter: blur(4px);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: #212529;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: end;
+    max-width: 220px;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+}
+
+.review-item:hover .review-expand-btn {
+    background: rgba(255, 255, 255, 1);
+}
+
+.review-expand-btn svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+/* Стили для свернутого состояния */
+.review-item.collapsible {
+    cursor: pointer;
+    position: relative;
+}
+
+.review-item.collapsible.collapsed .review-body {
+    max-height: 120px; /* Высота свернутого отзыва */
+    -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 10%, transparent 100%);
+}
+
+.review-item.collapsible.collapsed .review-expand-btn {
+    display: flex; /* Показываем кнопку в свернутом состоянии */
+}
+
+.review-item.collapsible.collapsed .review-expand-btn .collapse-text {
+    display: none;
+}
+
+/* Стили для развернутого состояния */
+.review-item.collapsible:not(.collapsed) .review-body {
+    max-height: 1000px; /* Максимальная высота, должно хватить для любого отзыва */
+    mask-image: none;
+}
+
+.review-item.collapsible:not(.collapsed) .review-expand-btn {
+    display: inline-flex;
+    position: static; /* Возвращаем в поток */
+    margin-top: 10px;
+    margin-left: auto; /* Прижимаем к правому краю */
+    background: transparent;
+    backdrop-filter: none;
+}
+
+.review-item.collapsible:not(.collapsed) .review-expand-btn .expand-text {
+    display: none;
+}
+
+.review-item.collapsible:not(.collapsed) .review-expand-btn svg {
+    transform: rotate(180deg);
+}
+
+/* Адаптация для тем */
+body.dark-theme .review-expand-btn {
+    background: rgba(44, 44, 44, 0.8);
+    color: #58a6ff;
+}
+body.dark-theme .review-expand-btn:hover {
+    background: rgba(44, 44, 44, 1);
+    color: #82baff;
+}
+body.dark-theme .review-item.collapsible:not(.collapsed) .review-expand-btn {
+    background: transparent;
+}
+
+body.coffee-theme .review-expand-btn {
+    background: rgba(236, 227, 211, 0.8);
+    color: #715f4d;
+}
+body.coffee-theme .review-expand-btn:hover {
+    background: rgba(236, 227, 211, 1);
+    color: #5f4f40;
+}
+body.coffee-theme .review-item.collapsible:not(.collapsed) .review-expand-btn {
+    background: transparent;
+}
+
 
 .reviews-filter{
     display: flex;
@@ -1408,9 +1546,6 @@ h2{
 
 /* --- АДАПТИВНОСТЬ --- */
 @media (min-width: 993px) {
-    body {
-        transition: padding-left 0.4s ease;
-    }
     .course-wrapper {
         padding: 4.5rem 1rem;
         padding-top: 0;
@@ -1484,6 +1619,9 @@ h2{
     }
     .description h3{
         font-size: 1.1rem;
+    }
+    .description-cta {
+        flex-direction: column;
     }
     .header{
         height: 50px;
@@ -1605,7 +1743,8 @@ h2{
         min-width: 250px;
     }
     .course-tab-btn{
-        padding: 1rem;
+        font-size: 1.1em;
+        padding: 0.7rem 20px;
     }
     .swiper-button-next,
     .swiper-button-prev {
@@ -1613,6 +1752,7 @@ h2{
         height: 35px;
         box-shadow: none;
         background: transparent;
+        opacity: 0;
     }
     .swiper-button-prev {
         left: -15px;
@@ -1637,6 +1777,12 @@ h2{
     .video-slider-container .swiper-button-next, 
     .video-slider-container .swiper-button-prev{
         display: none;
+    }
+    .reviews-list .review-item {
+        padding: 1rem;
+    }
+    .review-body p {
+        font-size: 0.9rem;
     }
 }
 
@@ -2109,6 +2255,7 @@ body.coffee-theme .video-slider-container .swiper-button-prev {
     padding: 0;
 }
 
+
 /* Заполнитель, чтобы избежать скачка контента */
 .tabs-placeholder {
     display: none;
@@ -2169,5 +2316,17 @@ body.coffee-theme .video-slider-container .swiper-button-prev {
         margin: auto;
         max-width: calc(100% - 2rem);
         width: 100%;
+    }
+    .reviews-filter {
+        align-items: normal;
+        gap: 8px;
+    }
+    .reviews-filter .star-filter{
+        gap: 0px;
+        padding: 5px 14px;
+        flex-flow: column-reverse;
+    }
+    .reviews-filter .star-filter.all {
+        justify-content: center;
     }
 }

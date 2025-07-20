@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (courseTabWrapper) {
         const tabButtons = document.querySelectorAll('.course-tab-btn');
         const tabContents = document.querySelectorAll('.course-tab-content');
-        const reviewSliderItems = document.querySelectorAll('.review-item');
+        const reviewSliderItems = document.querySelectorAll('.review-slider-wrapper .review-item');
         const seeAllReviewBtn = document.querySelector('.see-all-review');
         const faqCtaBtn = document.querySelector('.faq-cta-btn');
         const mobileReviewsTabBtn = document.querySelector('.mobile-reviews-tab-btn');
@@ -417,6 +417,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tabContents.forEach(content => {
                 content.classList.toggle('active', content.id === tabId);
             });
+
+            // Если активирована вкладка отзывов, инициализируем или переинициализируем их
+            if (tabId === 'reviews') {
+                setTimeout(initReviews, 50); // Небольшая задержка для гарантии рендеринга
+            }
 
             // Scroll to tabs
             const headerOffset = 80;
@@ -504,239 +509,226 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.classList.toggle('active');
             });
         });
+
+        // --- Логика для отзывов ---
+        const reviewsListContainer = document.querySelector('.reviews-list');
+        if (reviewsListContainer) {
+            const starFilters = document.querySelectorAll('.star-filter');
+
+            // 1. Логика фильтрации
+            starFilters.forEach(filter => {
+                filter.addEventListener('click', () => {
+                    starFilters.forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    
+                    const ratingFilter = filter.dataset.stars;
+                    
+                    reviewsListContainer.className = 'reviews-list';
+                    
+                    if (ratingFilter !== 'all') {
+                        reviewsListContainer.classList.add(`filter-active-${ratingFilter}`);
+                    }
+                });
+            });
+
+            // 2. Логика сворачивания/разворачивания
+            reviewsListContainer.addEventListener('click', (e) => {
+                const reviewItem = e.target.closest('.review-item.collapsible');
+                if (reviewItem) {
+                    reviewItem.classList.toggle('collapsed');
+                    setTimeout(() => lucide.createIcons(), 300);
+                }
+            });
+        }
     }
-// --- Video Stories Slider ---
-const videoStoriesSection = document.querySelector('.video-stories');
-if (videoStoriesSection) {
-    let videoSwiper;
-    let activeVideo = null;
-    let autoSlidFromVideoEnd = false;
-    let slideTriggeredByClick = false;
 
-    const videos = Array.from(videoStoriesSection.querySelectorAll('video'));
-    const REAL_SLIDES_COUNT = 5; // The number of unique videos
+    // --- Video Stories Slider ---
+    const videoStoriesSection = document.querySelector('.video-stories');
+    if (videoStoriesSection) {
+        let videoSwiper;
+        let activeVideo = null;
+        let autoSlidFromVideoEnd = false;
+        let slideTriggeredByClick = false;
 
-    const pauseAndMarkVideo = (video) => {
-        if (!video) return;
-        const slide = video.closest('.video-slide');
-        video.pause();
-        slide.classList.remove('playing');
-        slide.classList.add('paused');
-        slide.querySelector('.play-icon').style.display = 'none';
-        slide.querySelector('.pause-icon').style.display = 'block';
-        if (video === activeVideo) {
-            activeVideo = null;
-        }
-    };
+        const videos = Array.from(videoStoriesSection.querySelectorAll('video'));
+        const REAL_SLIDES_COUNT = 5; // The number of unique videos
 
-    const playVideoWithSound = (video) => {
-        if (!video) return;
-        if (activeVideo && activeVideo !== video) {
-            pauseAndMarkVideo(activeVideo);
-        }
-        const slide = video.closest('.video-slide');
-        if (!slide.classList.contains('paused')) {
-            video.currentTime = 0;
-        }
-        video.muted = false;
-        video.play().catch(() => {});
-        activeVideo = video;
-        slide.classList.add('playing');
-        slide.classList.remove('paused');
-        slide.querySelector('.play-icon').style.display = 'none';
-        slide.querySelector('.pause-icon').style.display = 'none';
-    };
+        const pauseAndMarkVideo = (video) => {
+            if (!video) return;
+            const slide = video.closest('.video-slide');
+            video.pause();
+            slide.classList.remove('playing');
+            slide.classList.add('paused');
+            slide.querySelector('.play-icon').style.display = 'none';
+            slide.querySelector('.pause-icon').style.display = 'block';
+            if (video === activeVideo) {
+                activeVideo = null;
+            }
+        };
 
-    const updateCustomPagination = (swiper) => {
-        const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
-        if (!paginationContainer) return;
-        const bullets = paginationContainer.querySelectorAll('.swiper-pagination-bullet');
-        const activeIndex = swiper.realIndex % REAL_SLIDES_COUNT;
+        const playVideoWithSound = (video) => {
+            if (!video) return;
+            if (activeVideo && activeVideo !== video) {
+                pauseAndMarkVideo(activeVideo);
+            }
+            const slide = video.closest('.video-slide');
+            if (!slide.classList.contains('paused')) {
+                video.currentTime = 0;
+            }
+            video.muted = false;
+            video.play().catch(() => {});
+            activeVideo = video;
+            slide.classList.add('playing');
+            slide.classList.remove('paused');
+            slide.querySelector('.play-icon').style.display = 'none';
+            slide.querySelector('.pause-icon').style.display = 'none';
+        };
 
-        bullets.forEach((bullet, index) => {
-            bullet.classList.toggle('swiper-pagination-bullet-active', index === activeIndex);
-        });
-    };
+        const updateCustomPagination = (swiper) => {
+            const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
+            if (!paginationContainer) return;
+            const bullets = paginationContainer.querySelectorAll('.swiper-pagination-bullet');
+            const activeIndex = swiper.realIndex % REAL_SLIDES_COUNT;
 
-    const initializeSlider = () => {
-        videoSwiper = new Swiper('.video-slider', {
-            loop: true,
-            slidesPerView: 'auto',
-            spaceBetween: 15,
-            centeredSlides: true,
-            navigation: {
-                nextEl: '.video-slider-container .swiper-button-next',
-                prevEl: '.video-slider-container .swiper-button-prev',
-            },
-            pagination: false, // Disable default pagination
-            on: {
-                init: function(swiper) {
-                    const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
-                    paginationContainer.innerHTML = '';
+            bullets.forEach((bullet, index) => {
+                bullet.classList.toggle('swiper-pagination-bullet-active', index === activeIndex);
+            });
+        };
 
-                    for (let i = 0; i < REAL_SLIDES_COUNT; i++) {
-                        const bullet = document.createElement('span');
-                        bullet.className = 'swiper-pagination-bullet';
-                        bullet.addEventListener('click', () => swiper.slideToLoop(i));
-                        paginationContainer.appendChild(bullet);
-                    }
-
-                    updateCustomPagination(swiper);
-
-                    const observer = new IntersectionObserver((entries) => {
-                        if (entries[0].isIntersecting) {
-                            setTimeout(() => swiper.slideNext(400), 500);
-                            observer.disconnect();
-                        }
-                    }, { threshold: 0.5 });
-                    observer.observe(swiper.el);
+        const initializeSlider = () => {
+            videoSwiper = new Swiper('.video-slider', {
+                loop: true,
+                slidesPerView: 'auto',
+                spaceBetween: 15,
+                centeredSlides: true,
+                navigation: {
+                    nextEl: '.video-slider-container .swiper-button-next',
+                    prevEl: '.video-slider-container .swiper-button-prev',
                 },
-                slideChange: () => {
-                    if (activeVideo) {
-                        pauseAndMarkVideo(activeVideo);
-                    }
-                },
-                slideChangeTransitionEnd: (swiper) => {
-                    updateCustomPagination(swiper); // Update pagination after transition ends
+                pagination: false, // Disable default pagination
+                on: {
+                    init: function(swiper) {
+                        const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
+                        paginationContainer.innerHTML = '';
 
-                    document.querySelectorAll('.video-slider .swiper-slide video').forEach(v => {
-                        const slide = v.closest('.video-slide');
-                        if (v !== activeVideo && !slide.classList.contains('paused')) {
-                            v.muted = true;
-                            v.play().catch(() => {});
+                        for (let i = 0; i < REAL_SLIDES_COUNT; i++) {
+                            const bullet = document.createElement('span');
+                            bullet.className = 'swiper-pagination-bullet';
+                            bullet.addEventListener('click', () => swiper.slideToLoop(i));
+                            paginationContainer.appendChild(bullet);
                         }
-                    });
-                    if (autoSlidFromVideoEnd || slideTriggeredByClick) {
-                        const newActiveSlide = document.querySelector('.video-slider .swiper-slide-active');
-                        if (newActiveSlide) {
-                            const newVideo = newActiveSlide.querySelector('video');
-                            if (newVideo) playVideoWithSound(newVideo);
+
+                        updateCustomPagination(swiper);
+
+                        const observer = new IntersectionObserver((entries) => {
+                            if (entries[0].isIntersecting) {
+                                setTimeout(() => swiper.slideNext(400), 500);
+                                observer.disconnect();
+                            }
+                        }, { threshold: 0.5 });
+                        observer.observe(swiper.el);
+                    },
+                    slideChange: () => {
+                        if (activeVideo) {
+                            pauseAndMarkVideo(activeVideo);
                         }
-                        autoSlidFromVideoEnd = false;
-                        slideTriggeredByClick = false;
+                    },
+                    slideChangeTransitionEnd: (swiper) => {
+                        updateCustomPagination(swiper); // Update pagination after transition ends
+
+                        document.querySelectorAll('.video-slider .swiper-slide video').forEach(v => {
+                            const slide = v.closest('.video-slide');
+                            if (v !== activeVideo && !slide.classList.contains('paused')) {
+                                v.muted = true;
+                                v.play().catch(() => {});
+                            }
+                        });
+                        if (autoSlidFromVideoEnd || slideTriggeredByClick) {
+                            const newActiveSlide = document.querySelector('.video-slider .swiper-slide-active');
+                            if (newActiveSlide) {
+                                const newVideo = newActiveSlide.querySelector('video');
+                                if (newVideo) playVideoWithSound(newVideo);
+                            }
+                            autoSlidFromVideoEnd = false;
+                            slideTriggeredByClick = false;
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        const videoSlides = document.querySelectorAll('.video-slide');
-        videoSlides.forEach(slide => {
-            const video = slide.querySelector('video');
-            if (video) {
-                slide.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const slideIndex = parseInt(slide.getAttribute('data-swiper-slide-index'), 10);
-                    const isCentered = videoSwiper.realIndex === slideIndex;
-                    if (video === activeVideo) {
-                        pauseAndMarkVideo(video);
-                    } else {
-                        if (isCentered) {
-                            playVideoWithSound(video);
+            const videoSlides = document.querySelectorAll('.video-slide');
+            videoSlides.forEach(slide => {
+                const video = slide.querySelector('video');
+                if (video) {
+                    slide.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const slideIndex = parseInt(slide.getAttribute('data-swiper-slide-index'), 10);
+                        const isCentered = videoSwiper.realIndex === slideIndex;
+                        if (video === activeVideo) {
+                            pauseAndMarkVideo(video);
                         } else {
-                            slideTriggeredByClick = true;
-                            videoSwiper.slideToLoop(slideIndex);
+                            if (isCentered) {
+                                playVideoWithSound(video);
+                            } else {
+                                slideTriggeredByClick = true;
+                                videoSwiper.slideToLoop(slideIndex);
+                            }
                         }
-                    }
-                });
-                video.addEventListener('ended', () => {
-                    if (video === activeVideo) {
-                        slide.classList.remove('playing');
-                        video.currentTime = 0;
-                        autoSlidFromVideoEnd = true;
-                        videoSwiper.slideNext();
-                    } else {
-                        video.currentTime = 0;
-                        video.play().catch(() => {});
-                    }
-                });
-            }
+                    });
+                    video.addEventListener('ended', () => {
+                        if (video === activeVideo) {
+                            slide.classList.remove('playing');
+                            video.currentTime = 0;
+                            autoSlidFromVideoEnd = true;
+                            videoSwiper.slideNext();
+                        } else {
+                            video.currentTime = 0;
+                            video.play().catch(() => {});
+                        }
+                    });
+                }
+            });
+        };
+
+        // Wait for all videos to load metadata before initializing Swiper
+        const videoPromises = videos.map(video =>
+            new Promise(resolve => {
+                if (video.readyState >= 1) {
+                    resolve();
+                } else {
+                    video.addEventListener('loadedmetadata', resolve, { once: true });
+                }
+            })
+        );
+
+        Promise.all(videoPromises).then(() => {
+            initializeSlider();
+            // Start muted playback for all videos
+            videos.forEach(video => {
+                video.muted = true;
+                video.play().catch(() => {});
+            });
         });
-    };
-
-    // Wait for all videos to load metadata before initializing Swiper
-    const videoPromises = videos.map(video =>
-        new Promise(resolve => {
-            if (video.readyState >= 1) {
-                resolve();
-            } else {
-                video.addEventListener('loadedmetadata', resolve, { once: true });
-            }
-        })
-    );
-
-    Promise.all(videoPromises).then(() => {
-        initializeSlider();
-        // Start muted playback for all videos
-        videos.forEach(video => {
-            video.muted = true;
-            video.play().catch(() => {});
-        });
-    });
-}
-
-    // --- Логика для отзывов ---
-    const reviewsListContainer = document.querySelector('.reviews-list');
-    const starFilters = document.querySelectorAll('.star-filter');
-
-    const reviews = [
-        { author: 'Алиса', avatar: 'https://i.pravatar.cc/40?u=1', rating: 5, text: ['Это лучший курс, который я когда-либо проходила! Все очень структурировано и понятно.', 'Особенно понравился модуль про эмоциональный интеллект. Уже применяю знания в жизни.'] },
-        { author: 'Борис', avatar: 'https://i.pravatar.cc/40?u=2', rating: 5, text: ['Материал подан великолепно. Ментальные модели изменили мой подход к работе.'] },
-        { author: 'Вероника', avatar: 'https://i.pravatar.cc/40?u=3', rating: 4, text: ['Хороший курс, много полезной информации. Хотелось бы больше практических заданий.'] },
-        { author: 'Григорий', avatar: 'https://i.pravatar.cc/40?u=4', rating: 5, text: ['Просто пушка! Рекомендую всем, кто хочет прокачать свое мышление.'] },
-        { author: 'Диана', avatar: 'https://i.pravatar.cc/40?u=5', rating: 3, text: ['Неплохо, но некоторые темы показались слишком сложными для новичка.'] },
-        { author: 'Евгений', avatar: 'https://i.pravatar.cc/40?u=6', rating: 2, text: ['Структура хорошая, но подача суховата.'] },
-    ];
-
-    function renderReviews(filter = 'all') {
-        reviewsListContainer.innerHTML = '';
-
-        const filteredReviews = reviews.filter(review => {
-            return filter === 'all' || review.rating.toString() === filter;
-        });
-
-        if (filteredReviews.length === 0) {
-            reviewsListContainer.innerHTML = '<p>Отзывов с такой оценкой пока нет.</p>';
-            return;
-        }
-
-        filteredReviews.forEach(review => {
-            const reviewElement = document.createElement('div');
-            reviewElement.className = 'review-item';
-
-            const starsHtml = Array(review.rating).fill(0).map(() =>
-                `<i data-lucide="star" class="filled"></i>`
-            ).join('');
-
-            const textHtml = review.text.map(p => `<p class="review-text">${p}</p>`).join('');
-
-            reviewElement.innerHTML = `
-            <div class="review-body">
-                ${textHtml}
-            </div>
-            <div class="reviews-header">
-                <div class="author">
-                    <img src="${review.avatar}" class="author-img">
-                    <span class="author-name">${review.author}</span>
-                </div>
-                <div class="review-rate">${starsHtml}</div>
-            </div>
-        `;
-            reviewsListContainer.appendChild(reviewElement);
-        });
-        lucide.createIcons();
     }
 
-    starFilters.forEach(filter => {
-        filter.addEventListener('click', () => {
-            starFilters.forEach(f => f.classList.remove('active'));
-            filter.classList.add('active');
-            const ratingFilter = filter.dataset.stars;
-            renderReviews(ratingFilter);
+    function initReviews() {
+        const reviewsListContainer = document.querySelector('.reviews-list');
+        if (!reviewsListContainer) return;
+    
+        const allReviews = reviewsListContainer.querySelectorAll('.review-item');
+        const COLLAPSED_HEIGHT = 120; // Синхронизировано с course.css
+    
+        allReviews.forEach(review => {
+            const reviewBody = review.querySelector('.review-body');
+            // Сначала убираем классы, чтобы пересчитать высоту корректно
+            review.classList.remove('collapsible', 'collapsed');
+            
+            // Проверяем, есть ли у отзыва тело и превышает ли его реальная высота заданную
+            if (reviewBody && reviewBody.scrollHeight > COLLAPSED_HEIGHT) {
+                review.classList.add('collapsible', 'collapsed');
+            }
         });
-    });
-
-    // Первоначальный рендер отзывов
-    renderReviews();
+    }
 
 // --- Логика для "липких" табов ---
     const header = document.querySelector('.header');
