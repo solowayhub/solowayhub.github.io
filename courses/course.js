@@ -101,9 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let swipeHandled = false;
 
     document.addEventListener('touchstart', e => {
+        const target = e.target;
+
+        // Ignore swipes originating from sliders
+        if (target.closest('.swiper')) {
+            return;
+        }
+        
         const isSidebarOpen = body.classList.contains('sidebar-open');
         const isPanelOpen = body.classList.contains('panel-open');
-        const target = e.target;
+
 
         // Если ни одна панель не открыта, блокируем свайп на интерактивных элементах
         if (!isSidebarOpen && !isPanelOpen) {
@@ -460,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const rect = reviewSliderWrapper.getBoundingClientRect();
             if (rect.top < 300) {
-                swiper.slideNext();
+                reviewSwiper.slideNext();
                 isSliderAnimated = true;
                 window.removeEventListener('scroll', animateSliderOnScroll);
             }
@@ -468,18 +475,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.addEventListener('scroll', animateSliderOnScroll);
 
-        // --- Swiper ---
-        const swiper = new Swiper('.review-slider', {
+        // --- Swiper for Reviews ---
+        const reviewSwiper = new Swiper('.review-slider', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 20,
             pagination: {
-                el: '.swiper-pagination',
+                el: '.review-slider-container .swiper-pagination',
                 clickable: true,
             },
             navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
+                nextEl: '.review-slider-container .swiper-button-next',
+                prevEl: '.review-slider-container .swiper-button-prev',
             },
             breakpoints: {
                 768: {
@@ -498,6 +505,171 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+// --- Video Stories Slider ---
+const videoStoriesSection = document.querySelector('.video-stories');
+if (videoStoriesSection) {
+    let videoSwiper;
+    let activeVideo = null;
+    let autoSlidFromVideoEnd = false;
+    let slideTriggeredByClick = false;
+
+    const videos = Array.from(videoStoriesSection.querySelectorAll('video'));
+    const REAL_SLIDES_COUNT = 5; // The number of unique videos
+
+    const pauseAndMarkVideo = (video) => {
+        if (!video) return;
+        const slide = video.closest('.video-slide');
+        video.pause();
+        slide.classList.remove('playing');
+        slide.classList.add('paused');
+        slide.querySelector('.play-icon').style.display = 'none';
+        slide.querySelector('.pause-icon').style.display = 'block';
+        if (video === activeVideo) {
+            activeVideo = null;
+        }
+    };
+
+    const playVideoWithSound = (video) => {
+        if (!video) return;
+        if (activeVideo && activeVideo !== video) {
+            pauseAndMarkVideo(activeVideo);
+        }
+        const slide = video.closest('.video-slide');
+        if (!slide.classList.contains('paused')) {
+            video.currentTime = 0;
+        }
+        video.muted = false;
+        video.play().catch(() => {});
+        activeVideo = video;
+        slide.classList.add('playing');
+        slide.classList.remove('paused');
+        slide.querySelector('.play-icon').style.display = 'none';
+        slide.querySelector('.pause-icon').style.display = 'none';
+    };
+
+    const updateCustomPagination = (swiper) => {
+        const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
+        if (!paginationContainer) return;
+        const bullets = paginationContainer.querySelectorAll('.swiper-pagination-bullet');
+        bullets.forEach((bullet, index) => {
+            bullet.classList.toggle('swiper-pagination-bullet-active', index === swiper.realIndex);
+        });
+    };
+
+    const initializeSlider = () => {
+        videoSwiper = new Swiper('.video-slider', {
+            loop: true,
+            slidesPerView: 'auto',
+            spaceBetween: 15,
+            centeredSlides: true,
+            navigation: {
+                nextEl: '.video-slider-container .swiper-button-next',
+                prevEl: '.video-slider-container .swiper-button-prev',
+            },
+            pagination: false, // Disable default pagination to create a custom one
+            on: {
+                init: function(swiper) {
+                    const paginationContainer = document.querySelector('.video-slider-container .swiper-pagination');
+                    paginationContainer.innerHTML = ''; // Clear just in case
+
+                    for (let i = 0; i < REAL_SLIDES_COUNT; i++) {
+                        const bullet = document.createElement('span');
+                        bullet.className = 'swiper-pagination-bullet';
+                        bullet.addEventListener('click', () => swiper.slideToLoop(i));
+                        paginationContainer.appendChild(bullet);
+                    }
+
+                    updateCustomPagination(swiper);
+
+                    const observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) {
+                            setTimeout(() => swiper.slideNext(400), 500);
+                            observer.disconnect();
+                        }
+                    }, { threshold: 0.5 });
+                    observer.observe(swiper.el);
+                },
+                slideChange: (swiper) => {
+                    updateCustomPagination(swiper);
+                    if (activeVideo) {
+                        pauseAndMarkVideo(activeVideo);
+                    }
+                },
+                slideChangeTransitionEnd: () => {
+                    document.querySelectorAll('.video-slider .swiper-slide video').forEach(v => {
+                        const slide = v.closest('.video-slide');
+                        if (v !== activeVideo && !slide.classList.contains('paused')) {
+                            v.muted = true;
+                            v.play().catch(() => {});
+                        }
+                    });
+                    if (autoSlidFromVideoEnd || slideTriggeredByClick) {
+                        const newActiveSlide = document.querySelector('.video-slider .swiper-slide-active');
+                        if (newActiveSlide) {
+                            const newVideo = newActiveSlide.querySelector('video');
+                            if (newVideo) playVideoWithSound(newVideo);
+                        }
+                        autoSlidFromVideoEnd = false;
+                        slideTriggeredByClick = false;
+                    }
+                }
+            }
+        });
+
+        const videoSlides = document.querySelectorAll('.video-slide');
+        videoSlides.forEach(slide => {
+            const video = slide.querySelector('video');
+            if (video) {
+                slide.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const slideIndex = parseInt(slide.getAttribute('data-swiper-slide-index'), 10);
+                    const isCentered = videoSwiper.realIndex === slideIndex;
+                    if (video === activeVideo) {
+                        pauseAndMarkVideo(video);
+                    } else {
+                        if (isCentered) {
+                            playVideoWithSound(video);
+                        } else {
+                            slideTriggeredByClick = true;
+                            videoSwiper.slideToLoop(slideIndex);
+                        }
+                    }
+                });
+                video.addEventListener('ended', () => {
+                    if (video === activeVideo) {
+                        slide.classList.remove('playing');
+                        video.currentTime = 0;
+                        autoSlidFromVideoEnd = true;
+                        videoSwiper.slideNext();
+                    } else {
+                        video.currentTime = 0;
+                        video.play().catch(() => {});
+                    }
+                });
+            }
+        });
+    };
+
+    // Wait for all videos to load metadata before initializing Swiper
+    const videoPromises = videos.map(video =>
+        new Promise(resolve => {
+            if (video.readyState >= 1) {
+                resolve();
+            } else {
+                video.addEventListener('loadedmetadata', resolve, { once: true });
+            }
+        })
+    );
+
+    Promise.all(videoPromises).then(() => {
+        initializeSlider();
+        // Start muted playback for all videos
+        videos.forEach(video => {
+            video.muted = true;
+            video.play().catch(() => {});
+        });
+    });
+}
 
     // --- Логика для отзывов ---
     const reviewsListContainer = document.querySelector('.reviews-list');
