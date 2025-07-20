@@ -401,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const courseTabWrapper = document.querySelector('.course-tab-wrapper');
     if (courseTabWrapper) {
         const tabButtons = document.querySelectorAll('.course-tab-btn');
-        const tabContents = document.querySelectorAll('.course-tab-content');
         const reviewSliderItems = document.querySelectorAll('.review-slider-wrapper .review-item');
         const seeAllReviewBtn = document.querySelector('.see-all-review');
         const faqCtaBtn = document.querySelector('.faq-cta-btn');
@@ -409,32 +408,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const mobileFaqTabBtn = document.querySelector('.mobile-faq-tab-btn');
         const desktopReviewsBtn = document.querySelector('.action-buttons .review-btn');
 
-        const activateTabAndScroll = (tabId) => {
-            // Switch tab
-            tabButtons.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
-            });
-            tabContents.forEach(content => {
-                content.classList.toggle('active', content.id === tabId);
-            });
-
-            // Если активирована вкладка отзывов, инициализируем или переинициализируем их
-            if (tabId === 'reviews') {
-                setTimeout(initReviews, 50); // Небольшая задержка для гарантии рендеринга
+        const courseTabsSwiper = new Swiper('.course-tab-content-wrapper', {
+            autoHeight: true,
+            spaceBetween: 30,
+            on: {
+                slideChange: function () {
+                    const activeIndex = this.activeIndex;
+                    tabButtons.forEach((button, index) => {
+                        button.classList.toggle('active', index === activeIndex);
+                    });
+                    // Дополнительная проверка высоты после смены слайда
+                    setTimeout(() => this.updateAutoHeight(300), 50);
+                },
+                init: function(swiper) {
+                     // Инициализация отзывов, если первый слайд - отзывы
+                    if (swiper.slides[swiper.activeIndex].id === 'reviews') {
+                        setTimeout(initReviews, 50);
+                    }
+                }
             }
+        });
 
-            // Если табы уже "прилипли", не скроллим, чтобы избежать прыжка
+        const scrollToStickyTabs = () => {
             const courseTabs = document.querySelector('.course-tabs');
-            if (courseTabs && (courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile'))) {
+            // Если табы уже "прилипли" или их нет, ничего не делаем
+            if (!courseTabWrapper || !courseTabs || courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile')) {
                 return;
             }
 
             // Scroll to tabs so they become sticky
             const header = document.querySelector('.header');
-            // На мобильных, если хэдер скрыт, мы все равно должны учитывать его высоту,
-            // так как скролл вверх его покажет.
             const headerHeight = header ? header.offsetHeight : 0;
-            const offsetPosition = courseTabWrapper.offsetTop - headerHeight;
+            // Добавляем +1px для гарантированного "прилипания"
+            const offsetPosition = courseTabWrapper.offsetTop - headerHeight + 1;
 
             window.scrollTo({
                 top: offsetPosition,
@@ -442,28 +448,53 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        tabButtons.forEach(button => {
+        // Переопределяем обработчик смены слайда, чтобы он включал скролл
+        courseTabsSwiper.on('slideChange', function () {
+            const activeIndex = this.activeIndex;
+            tabButtons.forEach((button, index) => {
+                button.classList.toggle('active', index === activeIndex);
+            });
+            scrollToStickyTabs(); // <--- Вот и скролл при каждой смене
+            // Дополнительная проверка высоты после смены слайда
+            setTimeout(() => this.updateAutoHeight(300), 50);
+        });
+
+        const activateTabAndScroll = (tabId) => {
+            const tabIndex = Array.from(tabButtons).findIndex(btn => btn.getAttribute('data-tab') === tabId);
+            if (tabIndex !== -1) {
+                courseTabsSwiper.slideTo(tabIndex);
+                // Оборачиваем в setTimeout, чтобы дать Swiper время обновить DOM и высоту,
+                // что гарантирует корректный расчет offsetTop для скролла.
+                setTimeout(() => {
+                    scrollToStickyTabs();
+                }, 50);
+            }
+        };
+
+        tabButtons.forEach((button, index) => {
             button.addEventListener('click', () => {
-                const tabId = button.getAttribute('data-tab');
-                activateTabAndScroll(tabId);
+                courseTabsSwiper.slideTo(index);
+                // Добавляем задержку, чтобы скролл сработал после начала анимации слайда
+                setTimeout(() => {
+                    scrollToStickyTabs();
+                }, 50);
             });
         });
 
-        if (seeAllReviewBtn) {
-            seeAllReviewBtn.addEventListener('click', () => activateTabAndScroll('reviews'));
-        }
-        if (faqCtaBtn) {
-            faqCtaBtn.addEventListener('click', () => activateTabAndScroll('faq'));
-        }
-        if (mobileReviewsTabBtn) {
-            mobileReviewsTabBtn.addEventListener('click', () => activateTabAndScroll('reviews'));
-        }
-        if (mobileFaqTabBtn) {
-            mobileFaqTabBtn.addEventListener('click', () => activateTabAndScroll('faq'));
-        }
-        if (desktopReviewsBtn) {
-            desktopReviewsBtn.addEventListener('click', () => activateTabAndScroll('reviews'));
-        }
+        const setupTabLink = (element, tabId) => {
+            if (element) {
+                element.addEventListener('click', () => {
+                    activateTabAndScroll(tabId);
+                });
+            }
+        };
+
+        setupTabLink(seeAllReviewBtn, 'reviews');
+        setupTabLink(faqCtaBtn, 'faq');
+        setupTabLink(mobileReviewsTabBtn, 'reviews');
+        setupTabLink(mobileFaqTabBtn, 'faq');
+        setupTabLink(desktopReviewsBtn, 'reviews');
+
         reviewSliderItems.forEach(item => {
             item.addEventListener('click', () => activateTabAndScroll('reviews'));
         });
@@ -515,6 +546,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const question = item.querySelector('.faq-question');
             question.addEventListener('click', () => {
                 item.classList.toggle('active');
+                // Обновляем высоту слайдера при открытии/закрытии FAQ
+                if (courseTabsSwiper) {
+                    setTimeout(() => courseTabsSwiper.updateAutoHeight(300), 50);
+                }
             });
         });
 
@@ -536,18 +571,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (ratingFilter !== 'all') {
                         reviewsListContainer.classList.add(`filter-active-${ratingFilter}`);
                     }
+                   // Обновляем высоту слайдера при фильтрации
+                   if (courseTabsSwiper) {
+                       setTimeout(() => courseTabsSwiper.updateAutoHeight(300), 50);
+                   }
                 });
-            });
+           });
 
-            // 2. Логика сворачивания/разворачивания
-            reviewsListContainer.addEventListener('click', (e) => {
-                const reviewItem = e.target.closest('.review-item.collapsible');
-                if (reviewItem) {
-                    reviewItem.classList.toggle('collapsed');
-                    setTimeout(() => lucide.createIcons(), 300);
-                }
-            });
-        }
+           // 2. Логика сворачивания/разворачивания
+           reviewsListContainer.addEventListener('click', (e) => {
+               const reviewItem = e.target.closest('.review-item.collapsible');
+               if (reviewItem) {
+                   reviewItem.classList.toggle('collapsed');
+                   setTimeout(() => {
+                       lucide.createIcons();
+                       // Обновляем высоту слайдера при сворачивании/разворачивании отзыва
+                       if (courseTabsSwiper) {
+                           courseTabsSwiper.updateAutoHeight(300);
+                       }
+                   }, 300);
+               }
+           });
+       }
     }
 
     // --- Video Stories Slider ---

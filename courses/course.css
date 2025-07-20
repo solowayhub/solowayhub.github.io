@@ -987,7 +987,7 @@ h2{
     display: flex;
     gap: 10px;
     border-bottom: 1px solid #e9ecef;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     background: #fff;
 }
 
@@ -1027,12 +1027,12 @@ h2{
     background-color: #212529;
 }
 
-.course-tab-content {
-    display: none;
+.course-tab-content-wrapper.swiper {
+    overflow: hidden;
 }
 
-.course-tab-content.active {
-    display: block;
+.course-tab-content.swiper-slide {
+    height: auto;
 }
 
 /* --- REVIEW SLIDER --- */
@@ -1376,7 +1376,7 @@ body.coffee-theme .review-item.collapsible:not(.collapsed) .review-expand-btn {
 
 /* --- FAQ --- */
 .faq-section {
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 .faq-section .desc{
