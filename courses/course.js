@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!tabsIndicator) return;
             const activeTab = tabButtons[swiper.activeIndex];
             if (activeTab) {
-                tabsIndicator.style.transition = 'all 0.3s ease';
+                tabsIndicator.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                 tabsIndicator.style.left = `${activeTab.offsetLeft}px`;
                 tabsIndicator.style.width = `${activeTab.offsetWidth}px`;
             }
@@ -883,7 +883,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 courseTabs.classList.add('header-visible');
             }
             if (isDesktop) {
-                setTimeout(updateStickyIndicator, 100);
+                setTimeout(updateStickyIndicator, 300);
             }
         } else if (tabsParentRect.top > stickPoint && isTabsSticky) {
             // ОТЛЕПИТЬ
@@ -892,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tabsPlaceholder.style.height = '0px';
             courseTabs.classList.remove('sticky', 'sticky-mobile', 'header-visible');
             if (isDesktop) {
-                setTimeout(updateStickyIndicator, 100);
+                setTimeout(updateStickyIndicator, 300);
             }
         }
 

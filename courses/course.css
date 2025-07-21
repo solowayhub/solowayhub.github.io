@@ -998,7 +998,7 @@ h2{
     bottom: -1px;
     height: 2px;
     background-color: #212529;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .course-tab-btn {
