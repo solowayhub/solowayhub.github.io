@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!tabsIndicator) return;
             const activeTab = tabButtons[swiper.activeIndex];
             if (activeTab) {
-                tabsIndicator.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                tabsIndicator.style.transition = 'all 0.3s ease';
                 tabsIndicator.style.left = `${activeTab.offsetLeft}px`;
                 tabsIndicator.style.width = `${activeTab.offsetWidth}px`;
             }
@@ -830,6 +830,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastScrollY = window.scrollY;
     let isTabsSticky = false;
 
+    function updateStickyIndicator() {
+        const tabsIndicator = document.querySelector('.tabs-indicator');
+        const activeTab = document.querySelector('.course-tab-btn.active');
+        if (tabsIndicator && activeTab) {
+            tabsIndicator.style.left = `${activeTab.offsetLeft}px`;
+            tabsIndicator.style.width = `${activeTab.offsetWidth}px`;
+        }
+    }
+
     function handleStickyTabs() {
         // Если одного из элементов нет, ничего не делаем
         if (!courseTabs || !header || !tabsPlaceholder) return;
@@ -873,12 +882,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isDesktop && header.classList.contains('visible')) {
                 courseTabs.classList.add('header-visible');
             }
+            if (isDesktop) {
+                setTimeout(updateStickyIndicator, 100);
+            }
         } else if (tabsParentRect.top > stickPoint && isTabsSticky) {
             // ОТЛЕПИТЬ
             isTabsSticky = false;
             tabsPlaceholder.classList.remove('visible');
             tabsPlaceholder.style.height = '0px';
             courseTabs.classList.remove('sticky', 'sticky-mobile', 'header-visible');
+            if (isDesktop) {
+                setTimeout(updateStickyIndicator, 100);
+            }
         }
 
         // Если табы уже липкие на мобильном, обновляем их позицию в зависимости от хедера

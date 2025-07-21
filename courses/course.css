@@ -980,6 +980,7 @@ h2{
 /* --- TABS --- */
 .course-tab-wrapper {
     margin-top: 60px;
+    overflow-x: hidden;
     
 }
 
@@ -997,7 +998,7 @@ h2{
     bottom: -1px;
     height: 2px;
     background-color: #212529;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
 }
 
 .course-tab-btn {
@@ -1008,7 +1009,7 @@ h2{
     font-size: 1.1rem;
     color: #a5a5a5;
     position: relative;
-    transition: color 0.3s ease, font-size 0.3s ease, padding 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .course-tab-btn{
@@ -2315,7 +2316,7 @@ body.coffee-theme .video-slider-container .swiper-button-prev {
         width: 100%;
         z-index: 999;
         transform: translateZ(0);
-        transition: all 0.3s;
+        transition: top 0.3s;
     }
     
     .course-tabs.sticky .course-tab-btn,
@@ -2333,12 +2334,20 @@ body.coffee-theme .video-slider-container .swiper-button-prev {
         max-width: 100%;
         display: flex;
         justify-content: space-between;
+        padding: 0;
+    }
+
+    .course-tabs.sticky-mobile {
+        padding: 0; /* Убираем лишние отступы с родителя, если они есть */
+        margin: 0 1rem;
+        width: calc(100% - 2rem);
     }
 
     .sticky-mobile .tabs-container{
-        margin: auto;
-        max-width: calc(100% - 2rem);
+        margin: 0; /* Убираем авто-маржин */
+        max-width: 100%; /* Убираем ограничение ширины */
         width: 100%;
+        padding: 0; /* Отступы теперь на .tabs-container */
     }
     .reviews-filter {
         align-items: normal;
