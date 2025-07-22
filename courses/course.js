@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const DESKTOP_BREAKPOINT = 992;
 
     let isDesktop;
+    let searchInput = null;
+    let allLessonsList = null;
 
     function openSidebar() {
         body.classList.add('sidebar-open');
@@ -208,21 +210,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Автоматическое выделение активного пункта плана при прокрутке ---
+    const coursePlanLinks = document.querySelectorAll('.course-plan .plan-link');
     window.addEventListener('scroll', () => {
-        const sections = document.querySelectorAll('.slide');
-        const headerOffset = 40;
-        let current = '';
+        const moduleTitles = document.querySelectorAll('.lesson-list .lessons-group-title[id]');
+        if (moduleTitles.length === 0) return;
 
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - headerOffset;
-            if (window.scrollY >= sectionTop) {
-                current = section.id;
+        const header = document.querySelector('.header');
+        const courseTabs = document.querySelector('.course-tabs');
+        let headerOffset = (header ? header.offsetHeight : 60) + (courseTabs ? courseTabs.offsetHeight : 50);
+
+        let currentModuleId = '';
+
+        for (let i = moduleTitles.length - 1; i >= 0; i--) {
+            const module = moduleTitles[i];
+            const rect = module.getBoundingClientRect();
+            if (rect.top <= headerOffset) {
+                currentModuleId = module.id;
+                break;
             }
-        });
+        }
+        
+        // If no module is above the offset (i.e., we are at the top), select the first one.
+        if (!currentModuleId) {
+            currentModuleId = moduleTitles[0].id;
+        }
 
-        planLinks.forEach(link => {
+        coursePlanLinks.forEach(link => {
             link.classList.remove('active');
-            if (link.getAttribute('data-target') === current) {
+            if (link.getAttribute('href') === `#${currentModuleId}`) {
                 link.classList.add('active');
             }
         });
@@ -397,9 +412,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('scroll', openFirstModuleOnScroll);
     }
 
+    let courseTabsSwiper;
+
     // --- TABS, SLIDER, FAQ ---
     const courseTabWrapper = document.querySelector('.course-tab-wrapper');
     if (courseTabWrapper) {
+        const courseTabs = document.querySelector('.course-tabs');
         const tabButtons = document.querySelectorAll('.course-tab-btn');
         const tabsIndicator = courseTabWrapper.querySelector('.tabs-indicator');
         const reviewSliderItems = document.querySelectorAll('.review-slider-wrapper .review-item');
@@ -449,19 +467,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 tabsIndicator.style.width = `${activeTab.offsetWidth}px`;
             }
         };
+        
+        const courseTabsSection = document.getElementById('course-tabs-section');
 
-        const courseTabsSwiper = new Swiper('.course-tab-content-wrapper', {
+        const scrollPositions = {};
+
+        courseTabsSwiper = new Swiper('.course-tab-content-wrapper', {
             autoHeight: true,
             spaceBetween: 30,
             watchSlidesProgress: true,
+            observer: true, 
+            observeParents: true,
             on: {
                 progress: function(swiper, progress) {
                     updateIndicator(swiper);
-                },
-                transitionEnd: function(swiper) {
-                    // Это событие срабатывает после любой анимации,
-                    // включая возврат слайда на место при отмененном свайпе.
-                    setIndicatorToEndPosition(swiper);
                 },
                 init: function(swiper) {
                     setIndicatorToEndPosition(swiper);
@@ -469,52 +488,79 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(initReviews, 50);
                     }
                 },
-                resize: function(swiper) {
-                    setTimeout(() => setIndicatorToEndPosition(swiper), 100);
-                },
-                slideChange: function () {
-                    const activeIndex = this.activeIndex;
-                    tabButtons.forEach((button, index) => {
-                        button.classList.remove('active');
-                        if (index === activeIndex) {
-                            button.classList.add('active');
-                        }
-                    });
+                slideChange: function (swiper) {
+                    if (isTabsSticky) {
+                        // Save old position
+                        const oldTabId = swiper.slides[swiper.previousIndex].id;
+                        scrollPositions[oldTabId] = window.scrollY;
 
-                    // Инициализируем отзывы, если переключились на них
-                    if (this.slides[activeIndex] && this.slides[activeIndex].id === 'reviews') {
-                        setTimeout(initReviews, 50);
+                        // Restore new position IMMEDIATELY
+                        const newTabId = swiper.slides[swiper.activeIndex].id;
+                        const targetScrollY = scrollPositions[newTabId];
+                        if (targetScrollY !== undefined) {
+                            window.scrollTo({ top: targetScrollY, behavior: 'auto' });
+                        }
                     }
 
-                    scrollToStickyTabs();
-                    setTimeout(() => this.updateAutoHeight(300), 50);
+                    const activeIndex = swiper.activeIndex;
+                    tabButtons.forEach((button, index) => {
+                        button.classList.toggle('active', index === activeIndex);
+                    });
+
+                    if (swiper.slides[activeIndex] && swiper.slides[activeIndex].id === 'reviews') {
+                        setTimeout(initReviews, 50);
+                    }
+                    
+                    if (swiper.slides[activeIndex].id !== 'lessons') {
+                        const stickyControls = document.querySelector('.lessons-sticky-controls');
+                        if(stickyControls) stickyControls.classList.remove('visible');
+                    }
+
+                    setTimeout(() => swiper.updateAutoHeight(300), 50);
+                },
+                transitionEnd: function(swiper) {
+                    setIndicatorToEndPosition(swiper);
+                    // Scrolling logic moved to slideChange to prevent visual jump
                 }
             }
         });
 
+        // Use ResizeObserver to keep the indicator perfectly aligned even when
+        // CSS changes the tab container's dimensions (e.g., on sticky).
+        const tabResizeObserver = new ResizeObserver(() => {
+            setIndicatorToEndPosition(courseTabsSwiper);
+        });
+        tabResizeObserver.observe(courseTabs);
+
         const scrollToStickyTabs = () => {
-            const courseTabs = document.querySelector('.course-tabs');
-            if (!courseTabWrapper || !courseTabs || courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile')) {
-                return;
-            }
             const header = document.querySelector('.header');
-            const headerHeight = header ? header.offsetHeight : 0;
-            const offsetPosition = courseTabWrapper.offsetTop - headerHeight + 1;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            const courseTabsSection = document.getElementById('course-tabs-section');
+            if (!header || !courseTabsSection) return;
+
+            const headerHeight = header.offsetHeight;
+            const tabsTop = courseTabsSection.offsetTop;
+            const stickyPoint = tabsTop - headerHeight;
+
+            // Only scroll if the page is currently above the point where tabs become sticky.
+            if (window.scrollY < stickyPoint) {
+                window.scrollTo({
+                    top: stickyPoint,
+                    behavior: 'smooth'
+                });
+            }
         };
 
         const activateTabAndScroll = (tabId) => {
             const tabIndex = Array.from(tabButtons).findIndex(btn => btn.getAttribute('data-tab') === tabId);
             if (tabIndex !== -1) {
                 courseTabsSwiper.slideTo(tabIndex);
-                setTimeout(() => scrollToStickyTabs(), 50);
+                scrollToStickyTabs();
             }
         };
 
         tabButtons.forEach((button, index) => {
             button.addEventListener('click', () => {
                 courseTabsSwiper.slideTo(index);
-                setTimeout(() => scrollToStickyTabs(), 50);
             });
         });
 
@@ -840,71 +886,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleStickyTabs() {
-        // Если одного из элементов нет, ничего не делаем
         if (!courseTabs || !header || !tabsPlaceholder) return;
 
         const scrollY = window.scrollY;
         const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
-        const headerHeight = header.offsetHeight+1;
+        const headerHeight = header.offsetHeight + 1;
 
-        // --- Логика для хедера на мобильных ---
         if (!isDesktop) {
-            // Прячем хедер при скролле вниз, показываем при скролле вверх (если мы не вверху страницы)
             if (scrollY > headerHeight) {
                 if (scrollDirection === 'down') {
-                    header.classList.add('hidden');
                     header.classList.remove('visible');
-                } else { // 'up'
-                    header.classList.remove('hidden');
+                    header.classList.add('hidden');
+                } else {
                     header.classList.add('visible');
+                    header.classList.remove('hidden');
                 }
             } else {
-                header.classList.remove('hidden');
                 header.classList.add('visible');
+                header.classList.remove('hidden');
             }
         }
 
-        // --- Общая логика для фиксации табов ---
         const tabsParentRect = courseTabs.parentElement.getBoundingClientRect();
-        
-        // Точка, в которой табы должны "прилипнуть"
-        const stickPoint = isDesktop
-            ? headerHeight
-            : (header.classList.contains('visible') ? headerHeight : 0);
+        const stickPoint = isDesktop ? headerHeight : (header.classList.contains('visible') ? headerHeight : 0);
 
         if (tabsParentRect.top <= stickPoint && !isTabsSticky) {
-            // СДЕЛАТЬ ЛИПКИМ
             isTabsSticky = true;
             tabsPlaceholder.style.height = `${courseTabs.offsetHeight}px`;
             tabsPlaceholder.classList.add('visible');
             courseTabs.classList.add(isDesktop ? 'sticky' : 'sticky-mobile');
-            // На мобильных, если хедер видим, добавляем класс для отступа
-            if (!isDesktop && header.classList.contains('visible')) {
-                courseTabs.classList.add('header-visible');
-            }
-            if (isDesktop) {
-                setTimeout(updateStickyIndicator, 300);
-            }
         } else if (tabsParentRect.top > stickPoint && isTabsSticky) {
-            // ОТЛЕПИТЬ
             isTabsSticky = false;
             tabsPlaceholder.classList.remove('visible');
             tabsPlaceholder.style.height = '0px';
             courseTabs.classList.remove('sticky', 'sticky-mobile', 'header-visible');
-            if (isDesktop) {
-                setTimeout(updateStickyIndicator, 300);
-            }
         }
 
-        // Если табы уже липкие на мобильном, обновляем их позицию в зависимости от хедера
         if (isTabsSticky && !isDesktop) {
-            if (header.classList.contains('visible')) {
-                courseTabs.classList.add('header-visible');
-            } else {
-                courseTabs.classList.remove('header-visible');
-            }
+            courseTabs.classList.toggle('header-visible', header.classList.contains('visible'));
         }
-
+    
         lastScrollY = scrollY <= 0 ? 0 : scrollY;
     }
 
@@ -959,6 +980,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         observer.observe(descriptionCta);
 
+        // Initial check in case the element is already out of view on load
+        if (window.innerWidth > DESKTOP_BREAKPOINT) {
+            const rect = descriptionCta.getBoundingClientRect();
+            if (rect.bottom < 0) {
+                panelCta.classList.add('visible');
+            }
+        }
+
         // Также нужно проверять при изменении размера окна
         window.addEventListener('resize', () => {
             if (window.innerWidth <= DESKTOP_BREAKPOINT) {
@@ -966,4 +995,530 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+
+    const lessonsTabContent = document.getElementById('lessons');
+    if (lessonsTabContent) {
+        searchInput = lessonsTabContent.querySelector('.search-bar input');
+        allLessonsList = lessonsTabContent.querySelector('#all-lessons');
+
+        let allLessonsData = [];
+        let selectedLessons = new Set();
+
+        const mainLessonsControls = lessonsTabContent.querySelector('.lessons-controls');
+        const stickyLessonsControls = document.querySelector('.lessons-sticky-controls');
+        const mainSearchInput = mainLessonsControls.querySelector('.search-bar input');
+        const stickySearchInput = stickyLessonsControls.querySelector('.sticky-search-input');
+
+        const moduleNames = [
+            "1. Основы родительства",
+            "2. Эмоциональное развитие ребенка",
+            "3. Физическое здоровье и безопасность",
+            "4. Социализация и отношения",
+            "5. Интеллектуальное развитие и обучение",
+            "6. Формирование характера и ценностей",
+            "7. Трудности и вызовы в воспитании",
+            "8. Подростковый возраст",
+            "9. Особые потребности и ситуации",
+            "10. Родительское благополучие"
+        ];
+
+        const sectionNames = [
+            // Модуль 1
+            [
+                "1.1. Ваши ценности и цели",
+                "1.2. Психологическая готовность",
+                "1.3. Партнерство в родительстве",
+                "1.4. Стили воспитания",
+                "1.5. Создание поддерживающей среды",
+                "1.6. Роль игры в развитии",
+                "1.7. Режим дня и ритуалы",
+                "1.8. Баланс работы и семьи",
+                "1.9. Финансовая подготовка",
+                "1.10. Поиск поддержки и ресурсов"
+            ],
+            // Модуль 2
+            [
+                "2.1. Что такое эмоциональный интеллект?",
+                "2.2. Распознавание своих эмоций",
+                "2.3. Управление своими эмоциями",
+                "2.4. Помощь ребенку в распознавании эмоций",
+                "2.5. Учим ребенка управлять эмоциями",
+                "2.6. Эмпатия и сопереживание",
+                "2.7. Развитие устойчивости к стрессу",
+                "2.8. Преодоление детских страхов",
+                "2.9. Работа с гневом и агрессией",
+                "2.10. Позитивное мышление и оптимизм"
+            ],
+        ];
+        // Добавляем остальные 8 модулей для полноты
+        for (let i = 2; i < 10; i++) {
+            const sections = [];
+            for (let j = 1; j <= 10; j++) {
+                sections.push(`${i + 1}.${j}. Название раздела ${i * 10 + j}`);
+            }
+            sectionNames.push(sections);
+        }
+
+        const mainLessonTabs = mainLessonsControls.querySelectorAll('.lesson-tab-btn');
+        const stickyLessonTabs = stickyLessonsControls.querySelectorAll('.lesson-tab-btn');
+        const lessonLists = lessonsTabContent.querySelectorAll('.lesson-list');
+        const openLessonsList = lessonsTabContent.querySelector('#open-lessons');
+        const favoritesLessonsList = lessonsTabContent.querySelector('#favorites-lessons');
+        const closedLessonsList = lessonsTabContent.querySelector('#closed-lessons');
+        const lessonsCountSpans = document.querySelectorAll('.lessons-count');
+        const selectAllWrappers = document.querySelectorAll('.select-all-wrapper');
+
+        function createLessonElement(lesson) {
+            const div = document.createElement('div');
+            div.className = 'lesson-item';
+            div.dataset.id = lesson.id;
+            div.dataset.status = lesson.status;
+
+            const link = document.createElement('a');
+            link.href = `lesson.html?id=${lesson.id}`;
+            link.className = 'lesson-main-link';
+            link.innerHTML = `
+                <span class="lesson-number">${lesson.id}.</span>
+                <span class="lesson-title">${lesson.title}</span>
+            `;
+
+            const tagsWrapper = document.createElement('div');
+            tagsWrapper.className = 'lesson-tags-wrapper';
+
+            const favoriteTag = document.createElement('div');
+            favoriteTag.className = 'lesson-tag-item favorite-tag';
+            favoriteTag.innerHTML = `<i data-lucide="heart" class="favorite-icon ${lesson.isFavorite ? 'active' : ''}"></i>`;
+
+            const statusTag = document.createElement('div');
+            statusTag.className = 'lesson-tag-item status-tag';
+            let statusContent = '';
+            if (lesson.status === 'new') {
+                statusContent = '<span class="lesson-tag new">new</span>';
+            } else if (lesson.status === 'free') {
+                statusContent = '<span class="lesson-tag free">free</span>';
+            } else if (lesson.status === 'started') {
+                statusContent = '<i data-lucide="check-circle-2" class="lesson-tag-icon"></i>';
+            } else if (lesson.status === 'purchased') {
+                statusContent = '<i data-lucide="gem" class="lesson-tag-icon"></i>';
+            } else if (lesson.status === 'locked' || lesson.status === 'expired') {
+                statusContent = '<i data-lucide="lock" class="lesson-tag-icon"></i>';
+            }
+            statusTag.innerHTML = statusContent;
+
+            tagsWrapper.appendChild(favoriteTag);
+            tagsWrapper.appendChild(statusTag);
+
+            if (lesson.status === 'locked' || lesson.status === 'expired') {
+                const selectorTag = document.createElement('div');
+                selectorTag.className = 'lesson-tag-item selector-tag';
+                selectorTag.innerHTML = '<div class="lesson-selector"></div>';
+                tagsWrapper.appendChild(selectorTag);
+            }
+
+            div.appendChild(link);
+            div.appendChild(tagsWrapper);
+
+            return div;
+        }
+
+        function generateMockLessons() {
+            allLessonsData = []; // Clear existing data
+
+            for (let i = 1; i <= 1000; i++) {
+                let status = 'locked';
+                if (i <= 3 || (i - 1) % 100 === 0) {
+                    status = 'free';
+                } else if (i <= 5) { // Lessons 4 and 5 are new
+                    status = 'new';
+                } else if (i === 6) {
+                    status = 'started';
+                } else if (i === 7) {
+                    status = 'purchased';
+                } else if (i === 8) {
+                    status = 'expired';
+                }
+
+                const moduleId = Math.floor((i - 1) / 100);
+                const sectionId = Math.floor(((i - 1) % 100) / 10);
+
+                allLessonsData.push({
+                    id: i,
+                    title: `${['Введение в курс', 'Основные принципы', 'Продвинутые техники', 'Практическое применение', 'Заключение'][i % 5]}`,
+                    status: status,
+                    isFavorite: i % 7 === 0 || i % 13 === 0,
+                    moduleId: moduleId + 1,
+                    moduleName: moduleNames[moduleId],
+                    sectionName: sectionNames[moduleId][sectionId]
+                });
+            }
+
+            const lessonsByModule = allLessonsData.reduce((acc, lesson) => {
+                if (!acc[lesson.moduleName]) {
+                    acc[lesson.moduleName] = {};
+                }
+                if (!acc[lesson.moduleName][lesson.sectionName]) {
+                    acc[lesson.moduleName][lesson.sectionName] = [];
+                }
+                acc[lesson.moduleName][lesson.sectionName].push(lesson);
+                return acc;
+            }, {});
+
+            allLessonsList.innerHTML = '';
+            let moduleIndex = 1;
+            for (const moduleName in lessonsByModule) {
+                const h3 = document.createElement('h3');
+                h3.className = 'lessons-group-title';
+                h3.id = `module-group-${moduleIndex}`;
+                h3.textContent = moduleName;
+                allLessonsList.appendChild(h3);
+
+                for (const sectionName in lessonsByModule[moduleName]) {
+                    const h4 = document.createElement('h4');
+                    h4.className = 'lessons-section-title';
+                    h4.textContent = sectionName;
+                    allLessonsList.appendChild(h4);
+
+                    lessonsByModule[moduleName][sectionName].forEach(lesson => {
+                        allLessonsList.appendChild(createLessonElement(lesson));
+                    });
+                }
+                moduleIndex++;
+            }
+            lucide.createIcons();
+        }
+
+        function handleSearch() {
+            const searchTerm = mainSearchInput.value.toLowerCase();
+            const activeList = lessonsTabContent.querySelector('.lesson-list.active');
+            if (!activeList) return;
+
+            const allElements = activeList.querySelectorAll('.lesson-item, .lessons-group-title, .lessons-section-title');
+
+            // If search is empty, ensure everything is visible and exit.
+            if (searchTerm === '') {
+                allElements.forEach(el => { el.style.display = '' });
+                if (courseTabsSwiper) {
+                    setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
+                }
+                return;
+            }
+
+            // If there is a search term, proceed with filtering.
+            const lessonItems = activeList.querySelectorAll('.lesson-item');
+            lessonItems.forEach(item => {
+                const title = item.querySelector('.lesson-title').textContent.toLowerCase();
+                item.style.display = title.includes(searchTerm) ? '' : 'none';
+            });
+
+            // Update header visibility only for the hierarchical 'all-lessons' list
+            if (activeList.id === 'all-lessons') {
+                const groupTitles = activeList.querySelectorAll('.lessons-group-title');
+                groupTitles.forEach(groupTitle => {
+                    let moduleHasVisibleContent = false;
+                    let nextElement = groupTitle.nextElementSibling;
+
+                    while (nextElement && !nextElement.classList.contains('lessons-group-title')) {
+                        if (nextElement.classList.contains('lessons-section-title')) {
+                            let sectionHasVisibleContent = false;
+                            let lessonElement = nextElement.nextElementSibling;
+
+                            while (lessonElement && !lessonElement.classList.contains('lessons-section-title') && !lessonElement.classList.contains('lessons-group-title')) {
+                                if (lessonElement.style.display !== 'none') {
+                                    sectionHasVisibleContent = true;
+                                    break;
+                                }
+                                lessonElement = lessonElement.nextElementSibling;
+                            }
+                            nextElement.style.display = sectionHasVisibleContent ? '' : 'none';
+                            if (sectionHasVisibleContent) {
+                                moduleHasVisibleContent = true;
+                            }
+                        }
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                    groupTitle.style.display = moduleHasVisibleContent ? '' : 'none';
+                });
+            }
+
+            if (courseTabsSwiper) {
+                setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
+            }
+        }
+
+        function applyFilter(filter) {
+            mainLessonTabs.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
+            stickyLessonTabs.forEach(btn => btn.classList.toggle('active', btn.dataset.filter === filter));
+
+            lessonLists.forEach(list => list.classList.remove('active'));
+            
+            let currentList;
+            let lessonsToShow = [];
+            
+            switch (filter) {
+                case 'all':
+                    currentList = allLessonsList;
+                    lessonsToShow = allLessonsData;
+                    break;
+                case 'open':
+                    currentList = openLessonsList;
+                    lessonsToShow = allLessonsData.filter(l => ['new', 'started', 'purchased', 'free'].includes(l.status));
+                    break;
+                case 'favorites':
+                    currentList = favoritesLessonsList;
+                    lessonsToShow = allLessonsData.filter(l => l.isFavorite);
+                    break;
+                case 'closed':
+                    currentList = closedLessonsList;
+                    lessonsToShow = allLessonsData.filter(l => l.status === 'expired' || l.status === 'locked');
+                    break;
+            }
+
+            const placeholderText = `Поиск по ${lessonsToShow.length} урокам`;
+            if (mainSearchInput) mainSearchInput.placeholder = placeholderText;
+            if (stickySearchInput) stickySearchInput.placeholder = placeholderText;
+            const hasClosedLessons = lessonsToShow.some(l => l.status === 'expired' || l.status === 'locked');
+            selectAllWrappers.forEach(wrapper => wrapper.style.display = hasClosedLessons ? 'block' : 'none');
+
+            if (filter !== 'all') {
+                currentList.innerHTML = '';
+                lessonsToShow.forEach(lesson => currentList.appendChild(createLessonElement(lesson)));
+            }
+            
+            currentList.classList.add('active');
+            handleSearch(); // Apply current search to the new active list
+            lucide.createIcons();
+            if (courseTabsSwiper) {
+                setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
+            }
+            // updateSelection();
+        }
+
+        mainLessonTabs.forEach(btn => {
+            btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+        });
+        stickyLessonTabs.forEach(btn => {
+            btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+        });
+
+        mainSearchInput.addEventListener('input', handleSearch);
+        stickySearchInput.addEventListener('input', () => {
+            mainSearchInput.value = stickySearchInput.value;
+            handleSearch();
+        });
+        mainSearchInput.addEventListener('input', () => {
+            stickySearchInput.value = mainSearchInput.value;
+            handleSearch();
+        });
+
+        // --- Favorite Toggle Logic ---
+        const lessonsContent = lessonsTabContent.querySelector('.lessons-content');
+        lessonsContent.addEventListener('click', (e) => {
+            const favoriteTag = e.target.closest('.favorite-tag');
+            if (!favoriteTag) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const lessonItem = favoriteTag.closest('.lesson-item');
+            if (!lessonItem) return;
+
+            const lessonId = parseInt(lessonItem.dataset.id, 10);
+            if (isNaN(lessonId)) return;
+
+            const lessonData = allLessonsData.find(l => l.id === lessonId);
+            if (lessonData) {
+                lessonData.isFavorite = !lessonData.isFavorite;
+            }
+
+            const allLessonInstances = document.querySelectorAll(`.lesson-item[data-id='${lessonId}']`);
+            allLessonInstances.forEach(instance => {
+                const icon = instance.querySelector('.favorite-icon');
+                if (icon) {
+                    icon.classList.toggle('active', lessonData.isFavorite);
+                }
+            });
+            
+            lucide.createIcons({
+                attrs: {
+                    'stroke-width': 1.5,
+                }
+            });
+        });
+
+        generateMockLessons();
+        applyFilter('all');
+    }
+
+    // --- Smooth scroll for new sidebar links ---
+    const newPlanLinks = document.querySelectorAll('.sidebar .plan-link');
+    newPlanLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                const allTab = document.querySelector('.lesson-tab-btn[data-filter="all"]');
+                if (allTab && !allTab.classList.contains('active')) {
+                    allTab.click();
+                }
+
+                setTimeout(() => {
+                    const courseTabs = document.querySelector('.course-tabs');
+                    let headerOffset = 60; // default desktop
+                    if (!isDesktop) headerOffset = 50;
+
+                    if (courseTabs && (courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile'))) {
+                        headerOffset += courseTabs.offsetHeight;
+                    }
+
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset - 50;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+
+                    if (!isDesktop) {
+                        closeSidebar();
+                    }
+                }, 50);
+            }
+        });
+    });
+
+    // --- Sticky Module Headers ---
+    function handleStickyModuleHeaders() {
+        if (!allLessonsList || !searchInput) return; // Guard clause
+
+        const courseTabs = document.querySelector('.course-tabs');
+        const header = document.querySelector('.header');
+
+        if (!courseTabs || !header) {
+            return;
+        }
+        
+        if (searchInput && searchInput.value.trim() !== '') {
+            // Если поиск активен, убираем все sticky-классы
+            document.querySelectorAll('.module-group-title.sticky-header').forEach(h => h.classList.remove('sticky-header'));
+            return;
+        }
+
+        const isDesktopView = window.innerWidth > DESKTOP_BREAKPOINT;
+        let topOffset = isDesktopView ? header.offsetHeight : (header.classList.contains('visible') ? header.offsetHeight : 0);
+        if (courseTabs.classList.contains('sticky') || courseTabs.classList.contains('sticky-mobile')) {
+            topOffset += courseTabs.offsetHeight;
+        }
+
+        if (allLessonsList) {
+            const moduleHeaders = allLessonsList.querySelectorAll('.module-group-title');
+            let currentStickyHeader = null;
+
+            moduleHeaders.forEach(header => {
+                header.classList.remove('sticky-header');
+                header.style.top = `${topOffset}px`;
+                const rect = header.getBoundingClientRect();
+                if (rect.top <= topOffset) {
+                    currentStickyHeader = header;
+                }
+            });
+
+            if (currentStickyHeader) {
+                currentStickyHeader.classList.add('sticky-header');
+            }
+        }
+    }
+    
+    // Добавляем вызов в обработчик скролла
+    const originalScrollHandler = window.onscroll;
+    window.addEventListener('scroll', () => {
+        if (typeof originalScrollHandler === 'function') {
+            originalScrollHandler();
+        }
+        handleStickyModuleHeaders();
+    });
+
+    // Обновляем при ресайзе
+    const originalResizeHandler = window.onresize;
+    window.addEventListener('resize', () => {
+        if (typeof originalResizeHandler === 'function') {
+            originalResizeHandler();
+        }
+        handleStickyModuleHeaders();
+    });
+
+    // Отключаем при поиске
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value.trim() !== '') {
+                document.querySelectorAll('.module-group-title.sticky-header').forEach(h => h.classList.remove('sticky-header'));
+            } else {
+                handleStickyModuleHeaders();
+            }
+        });
+    }
+
+    // --- Sticky Lessons Tabs Logic ---
+        const stickyLessonsControls = document.querySelector('.lessons-sticky-controls');
+        const mainLessonsControls = document.querySelector('.lessons-controls');
+        const lessonsContainer = document.querySelector('.lessons-container');
+
+        if (stickyLessonsControls && mainLessonsControls && lessonsContainer) {
+            const header = document.querySelector('.header');
+            const mainTabs = document.querySelector('.course-tabs');
+            let lastScrollY = window.scrollY;
+
+            // --- Control Synchronization ---
+            const mainSearchInput = mainLessonsControls.querySelector('.search-bar input');
+            const stickySearchInput = stickyLessonsControls.querySelector('.sticky-search-input');
+
+            mainSearchInput.addEventListener('input', () => {
+                stickySearchInput.value = mainSearchInput.value;
+                handleSearch();
+            });
+            stickySearchInput.addEventListener('input', () => {
+                mainSearchInput.value = stickySearchInput.value;
+                handleSearch();
+            });
+
+
+            function handleLessonsScroll() {
+                const lessonsContainer = document.querySelector('.lessons-container');
+                const lessonsTab = document.querySelector('.course-tab-btn[data-tab="lessons"]');
+
+                // Exit if not on lessons tab or the container element isn't available
+                if (!lessonsTab || !lessonsTab.classList.contains('active') || !lessonsContainer) {
+                    stickyLessonsControls.classList.remove('visible');
+                    return;
+                }
+
+                const scrollY = window.scrollY;
+                const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+                lastScrollY = scrollY < 0 ? 0 : scrollY;
+
+                const mainControlsRect = mainLessonsControls.getBoundingClientRect();
+                const headerHeight = header.offsetHeight;
+                const mainTabsHeight = mainTabs.offsetHeight;
+                const topOffset = headerHeight + mainTabsHeight;
+
+                const isMainControlsOutOfView = mainControlsRect.bottom < topOffset;
+                const isBottomBoundaryVisible = lessonsContainer.getBoundingClientRect().bottom > 0;
+
+                if (isMainControlsOutOfView && isBottomBoundaryVisible) {
+                    stickyLessonsControls.style.top = `${topOffset}px`;
+                    if (scrollDirection === 'up') {
+                        stickyLessonsControls.classList.add('visible');
+                    } else { // scrollDirection === 'down'
+                        stickyLessonsControls.classList.remove('visible');
+                    }
+                } else {
+                    // Also hide if the main controls are back in view or we scrolled past the container
+                    stickyLessonsControls.classList.remove('visible');
+                }
+            }
+
+            window.addEventListener('scroll', handleLessonsScroll);
+            handleLessonsScroll(); // Initial check
+        }
+    });
