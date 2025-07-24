@@ -3213,8 +3213,8 @@ body.dark-theme .lesson-number {
 body.dark-theme .lesson-item.selected {
     background-color: #444;
 }
-.lesson-item[data-status="expired"]:hover .lesson-main-link,
-.lesson-item[data-status="locked"]:hover .lesson-main-link{
+body.dark-theme .lesson-item[data-status="expired"]:hover .lesson-main-link,
+body.dark-theme .lesson-item[data-status="locked"]:hover .lesson-main-link{
     color: #e0e0e0;
 }
 body.dark-theme .purchase-footer {
