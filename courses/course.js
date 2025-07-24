@@ -212,7 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Автоматическое выделение активного пункта плана при прокрутке ---
     const coursePlanLinks = document.querySelectorAll('.course-plan .plan-link');
     window.addEventListener('scroll', () => {
-        const moduleTitles = document.querySelectorAll('.lesson-list .lessons-group-title[id]');
+        const activeFilterTab = document.querySelector('.lessons-tabs .lesson-tab-btn.active');
+        if (!activeFilterTab || activeFilterTab.dataset.filter !== 'all') {
+            return; // Do nothing if not on the "All" tab
+        }
+
+        const moduleTitles = document.querySelectorAll('#all-lessons .lessons-group-title[id]');
         if (moduleTitles.length === 0) return;
 
         const header = document.querySelector('.header');
@@ -1067,6 +1072,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const closedLessonsList = lessonsTabContent.querySelector('#closed-lessons');
         const lessonsCountSpans = document.querySelectorAll('.lessons-count');
         const selectAllWrappers = document.querySelectorAll('.select-all-wrapper');
+        const newCalcSpans = document.querySelectorAll('.new-calc');
+
+        function updateNewLessonsCount() {
+            const newLessonsCount = allLessonsData.filter(l => l.status === 'new').length;
+            newCalcSpans.forEach(span => {
+                if (newLessonsCount > 0) {
+                    span.textContent = `+${newLessonsCount}`;
+                } else {
+                    span.textContent = '';
+                }
+            });
+        }
 
         function createLessonElement(lesson) {
             const div = document.createElement('div');
@@ -1145,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id: i,
                     title: `${['Введение в курс', 'Основные принципы', 'Продвинутые техники', 'Практическое применение', 'Заключение'][i % 5]}`,
                     status: status,
-                    isFavorite: i % 7 === 0 || i % 13 === 0,
+                    isFavorite: i % 117 === 0 || i % 113 === 0,
                     moduleId: moduleId + 1,
                     moduleName: moduleNames[moduleId],
                     sectionName: sectionNames[moduleId][sectionId]
@@ -1163,7 +1180,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return acc;
             }, {});
 
-            allLessonsList.innerHTML = '';
+            const emptyMessage = allLessonsList.querySelector('.empty-list-message');
+            allLessonsList.innerHTML = ''; // Clear old lessons
+            if (emptyMessage) {
+                allLessonsList.appendChild(emptyMessage); // Put the unique message back
+            }
+
             let moduleIndex = 1;
             for (const moduleName in lessonsByModule) {
                 const h3 = document.createElement('h3');
@@ -1187,6 +1209,17 @@ document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         }
 
+        function checkListEmpty(list) {
+            // Check for any lesson item that is not hidden.
+            const hasVisibleLessons = list.querySelector('.lesson-item:not([style*="display: none"])');
+            // Also check for any group title that is not hidden (for the 'all' tab).
+            const hasVisibleGroupTitle = list.querySelector('.lessons-group-title:not([style*="display: none"])');
+
+            // The list is considered empty if there are no visible lessons AND no visible group titles.
+            const isEmpty = !hasVisibleLessons && !hasVisibleGroupTitle;
+            list.classList.toggle('empty', isEmpty);
+        }
+
         function handleSearch() {
             const searchTerm = mainSearchInput.value.toLowerCase();
             const activeList = lessonsTabContent.querySelector('.lesson-list.active');
@@ -1197,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // If search is empty, ensure everything is visible and exit.
             if (searchTerm === '') {
                 allElements.forEach(el => { el.style.display = '' });
+                checkListEmpty(activeList); // Re-check after clearing search
                 if (courseTabsSwiper) {
                     setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
                 }
@@ -1240,6 +1274,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            checkListEmpty(activeList);
+
             if (courseTabsSwiper) {
                 setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
             }
@@ -1280,12 +1316,17 @@ document.addEventListener('DOMContentLoaded', () => {
             selectAllWrappers.forEach(wrapper => wrapper.style.display = hasClosedLessons ? 'block' : 'none');
 
             if (filter !== 'all') {
-                currentList.innerHTML = '';
+                const emptyMessage = currentList.querySelector('.empty-list-message');
+                currentList.innerHTML = ''; // Clear old lessons
+                if (emptyMessage) {
+                    currentList.appendChild(emptyMessage); // Put the unique message back
+                }
                 lessonsToShow.forEach(lesson => currentList.appendChild(createLessonElement(lesson)));
             }
             
             currentList.classList.add('active');
             handleSearch(); // Apply current search to the new active list
+            checkListEmpty(currentList); // Check if the newly populated list is empty
             lucide.createIcons();
             if (courseTabsSwiper) {
                 setTimeout(() => courseTabsSwiper.updateAutoHeight(200), 50);
@@ -1347,6 +1388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         generateMockLessons();
         applyFilter('all');
+        updateNewLessonsCount();
     }
 
     // --- Smooth scroll for new sidebar links ---
